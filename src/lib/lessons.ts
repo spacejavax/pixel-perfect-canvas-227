@@ -6,6 +6,16 @@ export interface LessonSection {
   title: string;
   content: string;
   order_number: number;
+  sources?: LessonSectionSource[];
+}
+
+export interface LessonSectionSource {
+  id: string;
+  title: string;
+  organization: string | null;
+  url: string;
+  relevance_note: string | null;
+  order_number: number;
 }
 
 export interface QuizAnswer {
@@ -73,7 +83,7 @@ export async function fetchLessonById(lessonId: string): Promise<LessonDetail | 
     supabase
       .from("lesson_quizzes")
       .select(
-        "id, section_id, type, passing_score, lesson_questions(id, question, explanation, order_number, is_remediation, lesson_quiz_answers(id, answer, order_number))",
+        "id, section_id, type, passing_score, lesson_questions(id, question, explanation, order_number, is_remediation)",
       )
       .eq("lesson_id", lessonId),
     supabase
@@ -87,6 +97,56 @@ export async function fetchLessonById(lessonId: string): Promise<LessonDetail | 
   if (quizzesRes.error) throw quizzesRes.error;
   if (interactionsRes.error) throw interactionsRes.error;
 
+  const sectionIds = (sectionsRes.data ?? []).map((s) => s.id);
+  const questionIds: string[] = [];
+  for (const q of quizzesRes.data ?? []) {
+    for (const qq of q.lesson_questions ?? []) {
+      questionIds.push((qq as { id: string }).id);
+    }
+  }
+
+  const [answerOptionsRes, sectionSourcesRes] = await Promise.all([
+    questionIds.length > 0
+      ? supabase
+          .from("lesson_quiz_answer_options")
+          .select("id, question_id, answer, order_number")
+          .in("question_id", questionIds)
+      : Promise.resolve({ data: [], error: null }),
+    sectionIds.length > 0
+      ? supabase
+          .from("lesson_sources")
+          .select(
+            "id, lesson_section_id, relevance_note, order_number, sources(id, title, organization, url)",
+          )
+          .in("lesson_section_id", sectionIds)
+          .order("order_number", { ascending: true })
+      : Promise.resolve({ data: [], error: null }),
+  ]);
+  if ((answerOptionsRes as { error: unknown }).error) throw (answerOptionsRes as { error: Error }).error;
+  if ((sectionSourcesRes as { error: unknown }).error) throw (sectionSourcesRes as { error: Error }).error;
+
+  const answersByQuestion = new Map<string, QuizAnswer[]>();
+  for (const opt of ((answerOptionsRes as { data: Array<{ id: string; question_id: string; answer: string; order_number: number }> }).data) ?? []) {
+    const arr = answersByQuestion.get(opt.question_id) ?? [];
+    arr.push({ id: opt.id, answer: opt.answer, order_number: opt.order_number });
+    answersByQuestion.set(opt.question_id, arr);
+  }
+
+  const sourcesBySection = new Map<string, LessonSectionSource[]>();
+  for (const row of ((sectionSourcesRes as { data: Array<{ id: string; lesson_section_id: string; relevance_note: string | null; order_number: number; sources: { id: string; title: string; organization: string | null; url: string } | null }> }).data) ?? []) {
+    if (!row.sources) continue;
+    const arr = sourcesBySection.get(row.lesson_section_id) ?? [];
+    arr.push({
+      id: row.id,
+      title: row.sources.title,
+      organization: row.sources.organization,
+      url: row.sources.url,
+      relevance_note: row.relevance_note,
+      order_number: row.order_number,
+    });
+    sourcesBySection.set(row.lesson_section_id, arr);
+  }
+
   const quizzes: LessonQuiz[] = (quizzesRes.data ?? []).map((q) => ({
     id: q.id,
     section_id: q.section_id,
@@ -94,18 +154,12 @@ export async function fetchLessonById(lessonId: string): Promise<LessonDetail | 
     passing_score: q.passing_score,
     questions: (q.lesson_questions ?? [])
       .filter((qq: { is_remediation: boolean }) => !qq.is_remediation)
-      .map((qq: {
-        id: string;
-        question: string;
-        explanation: string | null;
-        order_number: number;
-        lesson_quiz_answers: Array<{ id: string; answer: string; order_number: number }>;
-      }) => ({
+      .map((qq: { id: string; question: string; explanation: string | null; order_number: number }) => ({
         id: qq.id,
         question: qq.question,
         explanation: qq.explanation,
         order_number: qq.order_number,
-        answers: (qq.lesson_quiz_answers ?? []).sort(
+        answers: (answersByQuestion.get(qq.id) ?? []).sort(
           (a, b) => a.order_number - b.order_number,
         ),
       }))
@@ -113,13 +167,19 @@ export async function fetchLessonById(lessonId: string): Promise<LessonDetail | 
   }));
 
   const course = lesson.course as { id: string; slug: string; title: string };
+  const sections: LessonSection[] = (sectionsRes.data ?? []).map((s) => ({
+    ...s,
+    sources: (sourcesBySection.get(s.id) ?? []).sort(
+      (a, b) => a.order_number - b.order_number,
+    ),
+  }));
   return {
     id: lesson.id,
     title: lesson.title,
     description: lesson.description,
     order_number: lesson.order_number,
     course: { id: course.id, slug: course.slug, title: course.title },
-    sections: sectionsRes.data ?? [],
+    sections,
     quizzes,
     interactions: (interactionsRes.data ?? []).filter(
       (i: { is_active: boolean }) => i.is_active !== false,
