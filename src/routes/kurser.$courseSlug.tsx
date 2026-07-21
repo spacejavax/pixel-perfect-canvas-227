@@ -113,10 +113,7 @@ function CourseDetailPage() {
           ) : null}
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <Button asChild size="lg">
-              <Link
-                to="/auth"
-                search={{ redirect: `/kurser/${course.slug}` }}
-              >
+              <Link to="/logga-in" search={{ redirect: `/kurser/${course.slug}` }}>
                 Starta kursen
                 <ArrowRight className="ml-1 h-4 w-4" />
               </Link>
@@ -134,8 +131,8 @@ function CourseDetailPage() {
             {course.lessons.map((lesson, i) => (
               <li key={lesson.id}>
                 <Link
-                  to="/_authenticated/lektion/$lessonId"
-                  params={{ lessonId: lesson.id }}
+                  to="/kurser/$courseSlug/$lessonId"
+                  params={{ courseSlug: course.slug, lessonId: lesson.id }}
                   className="flex items-start gap-4 p-5 transition-colors hover:bg-muted/40 sm:p-6"
                 >
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">

@@ -65,7 +65,7 @@ function OnboardingPage() {
         .eq("id", userRes.user.id)
         .maybeSingle();
       if (profile?.onboarding_completed_at) {
-        navigate({ to: "/dashboard" });
+        navigate({ to: "/hem" });
       }
     })();
   }, [navigate]);
@@ -85,20 +85,34 @@ function OnboardingPage() {
       if (rows.length > 0) {
         const { error: insErr } = await supabase
           .from("steg1_user_quiz_answers_sparad_data")
-          .insert(rows);
+          .upsert(rows, { onConflict: "user_id,question_id" });
         if (insErr) throw insErr;
+      }
+
+      // Map onboarding answer values into profile summary fields.
+      const profileUpdate: Record<string, string | null> = {
+        onboarding_completed_at: new Date().toISOString(),
+      };
+      const questionById = new Map((data?.questions ?? []).map((q) => [q.id, q]));
+      const answerById = new Map((data?.answers ?? []).map((a) => [a.id, a]));
+      for (const [qid, aid] of Object.entries(selected)) {
+        const q = questionById.get(qid);
+        const a = answerById.get(aid);
+        if (!q || !a) continue;
+        const value = a.value ?? a.svar_text;
+        const cat = (q.category ?? "").toLowerCase();
+        if (cat === "interest" || cat === "topic") profileUpdate.onboarding_topic = value;
+        else if (cat === "age") profileUpdate.onboarding_age_range = value;
+        else if (cat === "situation" || cat === "occupation") profileUpdate.occupation = value;
       }
 
       const { error: upErr } = await supabase
         .from("user_profiles")
-        .upsert(
-          { id: uid, onboarding_completed_at: new Date().toISOString() },
-          { onConflict: "id" },
-        );
+        .upsert({ id: uid, ...profileUpdate }, { onConflict: "id" });
       if (upErr) throw upErr;
 
       toast.success("Tack! Vi anpassar din upplevelse.");
-      navigate({ to: "/dashboard" });
+      navigate({ to: "/hem" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Kunde inte spara.");
     } finally {
@@ -183,7 +197,7 @@ function OnboardingPage() {
           {!isLoading && !error && questions.length === 0 && (
             <div className="rounded-2xl border border-border bg-card p-6">
               <p className="text-muted-foreground">Inga frågor tillgängliga just nu.</p>
-              <Button className="mt-4" onClick={() => navigate({ to: "/dashboard" })}>
+              <Button className="mt-4" onClick={() => navigate({ to: "/hem" })}>
                 Gå vidare
               </Button>
             </div>

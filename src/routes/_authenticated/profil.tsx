@@ -105,7 +105,7 @@ function ProfilePage() {
       <PageContainer narrow className="py-12">
         <div className="mb-6">
           <Button asChild variant="ghost" size="sm" className="-ml-2">
-            <Link to="/dashboard" className="inline-flex items-center gap-1">
+            <Link to="/hem" className="inline-flex items-center gap-1">
               <ArrowLeft className="h-4 w-4" />
               Till min sida
             </Link>

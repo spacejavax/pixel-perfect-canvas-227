@@ -9,9 +9,13 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SkapaKontoRouteImport } from './routes/skapa-konto'
 import { Route as OmPongiRouteImport } from './routes/om-pongi'
+import { Route as LoggaInRouteImport } from './routes/logga-in'
 import { Route as IntegritetRouteImport } from './routes/integritet'
+import { Route as GlomtLosenordRouteImport } from './routes/glomt-losenord'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AterstallLosenordRouteImport } from './routes/aterstall-losenord'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as KurserIndexRouteImport } from './routes/kurser.index'
@@ -21,9 +25,19 @@ import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authentic
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedLektionLessonIdRouteImport } from './routes/_authenticated/lektion.$lessonId'
 
+const SkapaKontoRoute = SkapaKontoRouteImport.update({
+  id: '/skapa-konto',
+  path: '/skapa-konto',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OmPongiRoute = OmPongiRouteImport.update({
   id: '/om-pongi',
   path: '/om-pongi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoggaInRoute = LoggaInRouteImport.update({
+  id: '/logga-in',
+  path: '/logga-in',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IntegritetRoute = IntegritetRouteImport.update({
@@ -31,9 +45,19 @@ const IntegritetRoute = IntegritetRouteImport.update({
   path: '/integritet',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GlomtLosenordRoute = GlomtLosenordRouteImport.update({
+  id: '/glomt-losenord',
+  path: '/glomt-losenord',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AterstallLosenordRoute = AterstallLosenordRouteImport.update({
+  id: '/aterstall-losenord',
+  path: '/aterstall-losenord',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -79,9 +103,13 @@ const AuthenticatedLektionLessonIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/aterstall-losenord': typeof AterstallLosenordRoute
   '/auth': typeof AuthRoute
+  '/glomt-losenord': typeof GlomtLosenordRoute
   '/integritet': typeof IntegritetRoute
+  '/logga-in': typeof LoggaInRoute
   '/om-pongi': typeof OmPongiRoute
+  '/skapa-konto': typeof SkapaKontoRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/profil': typeof AuthenticatedProfilRoute
@@ -91,9 +119,13 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/aterstall-losenord': typeof AterstallLosenordRoute
   '/auth': typeof AuthRoute
+  '/glomt-losenord': typeof GlomtLosenordRoute
   '/integritet': typeof IntegritetRoute
+  '/logga-in': typeof LoggaInRoute
   '/om-pongi': typeof OmPongiRoute
+  '/skapa-konto': typeof SkapaKontoRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/profil': typeof AuthenticatedProfilRoute
@@ -105,9 +137,13 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/aterstall-losenord': typeof AterstallLosenordRoute
   '/auth': typeof AuthRoute
+  '/glomt-losenord': typeof GlomtLosenordRoute
   '/integritet': typeof IntegritetRoute
+  '/logga-in': typeof LoggaInRoute
   '/om-pongi': typeof OmPongiRoute
+  '/skapa-konto': typeof SkapaKontoRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
@@ -119,9 +155,13 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/aterstall-losenord'
     | '/auth'
+    | '/glomt-losenord'
     | '/integritet'
+    | '/logga-in'
     | '/om-pongi'
+    | '/skapa-konto'
     | '/dashboard'
     | '/onboarding'
     | '/profil'
@@ -131,9 +171,13 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/aterstall-losenord'
     | '/auth'
+    | '/glomt-losenord'
     | '/integritet'
+    | '/logga-in'
     | '/om-pongi'
+    | '/skapa-konto'
     | '/dashboard'
     | '/onboarding'
     | '/profil'
@@ -144,9 +188,13 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/aterstall-losenord'
     | '/auth'
+    | '/glomt-losenord'
     | '/integritet'
+    | '/logga-in'
     | '/om-pongi'
+    | '/skapa-konto'
     | '/_authenticated/dashboard'
     | '/_authenticated/onboarding'
     | '/_authenticated/profil'
@@ -158,20 +206,38 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AterstallLosenordRoute: typeof AterstallLosenordRoute
   AuthRoute: typeof AuthRoute
+  GlomtLosenordRoute: typeof GlomtLosenordRoute
   IntegritetRoute: typeof IntegritetRoute
+  LoggaInRoute: typeof LoggaInRoute
   OmPongiRoute: typeof OmPongiRoute
+  SkapaKontoRoute: typeof SkapaKontoRoute
   KurserCourseSlugRoute: typeof KurserCourseSlugRoute
   KurserIndexRoute: typeof KurserIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/skapa-konto': {
+      id: '/skapa-konto'
+      path: '/skapa-konto'
+      fullPath: '/skapa-konto'
+      preLoaderRoute: typeof SkapaKontoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/om-pongi': {
       id: '/om-pongi'
       path: '/om-pongi'
       fullPath: '/om-pongi'
       preLoaderRoute: typeof OmPongiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/logga-in': {
+      id: '/logga-in'
+      path: '/logga-in'
+      fullPath: '/logga-in'
+      preLoaderRoute: typeof LoggaInRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/integritet': {
@@ -181,11 +247,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IntegritetRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/glomt-losenord': {
+      id: '/glomt-losenord'
+      path: '/glomt-losenord'
+      fullPath: '/glomt-losenord'
+      preLoaderRoute: typeof GlomtLosenordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aterstall-losenord': {
+      id: '/aterstall-losenord'
+      path: '/aterstall-losenord'
+      fullPath: '/aterstall-losenord'
+      preLoaderRoute: typeof AterstallLosenordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -267,9 +347,13 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AterstallLosenordRoute: AterstallLosenordRoute,
   AuthRoute: AuthRoute,
+  GlomtLosenordRoute: GlomtLosenordRoute,
   IntegritetRoute: IntegritetRoute,
+  LoggaInRoute: LoggaInRoute,
   OmPongiRoute: OmPongiRoute,
+  SkapaKontoRoute: SkapaKontoRoute,
   KurserCourseSlugRoute: KurserCourseSlugRoute,
   KurserIndexRoute: KurserIndexRoute,
 }
