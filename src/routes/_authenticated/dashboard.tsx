@@ -80,7 +80,16 @@ function DashboardPage() {
         {courses.data && courses.data.length > 0 && (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {courses.data.map((c) => (
-              <CourseCard key={c.id} course={c} />
+              <CourseCard
+                key={c.id}
+                course={{
+                  slug: c.slug,
+                  title: c.title,
+                  description: c.description,
+                  lessonCount: c.lessonCount,
+                  order: c.order_number,
+                }}
+              />
             ))}
           </div>
         )}
