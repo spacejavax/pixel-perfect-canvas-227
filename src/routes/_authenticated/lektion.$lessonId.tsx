@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, XCircle, Loader2, Calculator } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { PageContainer } from "@/components/site/PageContainer";
 import { EmptyState } from "@/components/site/EmptyState";
@@ -20,6 +20,7 @@ import {
   type LessonSection,
   type SubmitAnswerResult,
 } from "@/lib/lessons";
+import { computeFromConfig, formatNumber, type CalcConfig } from "@/lib/calculator";
 
 export const Route = createFileRoute("/_authenticated/lektion/$lessonId")({
   head: () => ({
@@ -363,14 +364,6 @@ function QuizBlock({ quiz }: { quiz: LessonQuiz }) {
   );
 }
 
-interface CalcInput {
-  key: string;
-  label: string;
-  type?: string;
-  unit?: string;
-  placeholder?: string;
-}
-
 function InteractionBlock({
   interaction,
   userId,
@@ -378,12 +371,25 @@ function InteractionBlock({
   interaction: LessonInteraction;
   userId: string | undefined;
 }) {
-  const cfg = (interaction.config ?? {}) as { inputs?: CalcInput[] };
+  const cfg = (interaction.config ?? {}) as CalcConfig;
   const inputs = Array.isArray(cfg.inputs) ? cfg.inputs : [];
+  const isCalculator = interaction.type === "calculator";
   const [values, setValues] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | undefined>();
+
+  const computed = useMemo(() => {
+    if (!isCalculator || inputs.length === 0) return null;
+    return computeFromConfig(cfg, values);
+  }, [cfg, inputs, isCalculator, values]);
+
+  const allFilled = useMemo(() => {
+    return inputs.every((input) => {
+      const raw = values[input.key];
+      return raw !== undefined && raw !== "";
+    });
+  }, [inputs, values]);
 
   async function onSave() {
     if (!userId) return;
@@ -405,7 +411,7 @@ function InteractionBlock({
         <div className="flex items-center justify-between gap-3">
           <h3 className="text-lg font-semibold">{interaction.title}</h3>
           <span className="rounded-full bg-accent/20 px-2.5 py-0.5 text-xs font-medium text-accent-foreground">
-            {interaction.type === "calculator" ? "Kalkylator" : "Övning"}
+            {isCalculator ? "Kalkylator" : "Övning"}
           </span>
         </div>
         {interaction.instructions ? (
@@ -432,12 +438,25 @@ function InteractionBlock({
                   placeholder={input.placeholder}
                   className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
                   value={values[input.key] ?? ""}
-                  onChange={(e) =>
-                    setValues((prev) => ({ ...prev, [input.key]: e.target.value }))
-                  }
+                  onChange={(e) => {
+                    setSaved(false);
+                    setValues((prev) => ({ ...prev, [input.key]: e.target.value }));
+                  }}
                 />
               </label>
             ))}
+          </div>
+        ) : null}
+
+        {isCalculator && computed !== null && allFilled ? (
+          <div className="mt-5 rounded-xl border border-primary/20 bg-primary/5 p-4">
+            <div className="flex items-center gap-2 text-sm font-medium text-primary">
+              <Calculator className="h-4 w-4" />
+              {cfg.output_label ?? "Resultat"}
+            </div>
+            <p className="mt-1 text-2xl font-bold tracking-tight text-foreground">
+              {formatNumber(computed, cfg.output_unit)}
+            </p>
           </div>
         ) : null}
 
