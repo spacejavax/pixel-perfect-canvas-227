@@ -260,3 +260,23 @@ export async function saveInteractionResponse(
     );
   if (error) throw error;
 }
+
+export interface LessonNav {
+  prev: { id: string; title: string } | null;
+  next: { id: string; title: string } | null;
+}
+
+export async function fetchLessonNav(courseId: string, lessonId: string): Promise<LessonNav> {
+  const { data, error } = await supabase
+    .from("lessons")
+    .select("id, title, order_number")
+    .eq("course_id", courseId)
+    .order("order_number", { ascending: true });
+  if (error) throw error;
+  const list = data ?? [];
+  const idx = list.findIndex((l) => l.id === lessonId);
+  if (idx === -1) return { prev: null, next: null };
+  const prev = idx > 0 ? { id: list[idx - 1].id, title: list[idx - 1].title } : null;
+  const next = idx < list.length - 1 ? { id: list[idx + 1].id, title: list[idx + 1].title } : null;
+  return { prev, next };
+}
