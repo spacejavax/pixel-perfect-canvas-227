@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, XCircle, Loader2, Calculator } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { PageContainer } from "@/components/site/PageContainer";
 import { EmptyState } from "@/components/site/EmptyState";
@@ -20,6 +20,7 @@ import {
   type LessonSection,
   type SubmitAnswerResult,
 } from "@/lib/lessons";
+import { computeFromConfig, formatNumber, type CalcConfig } from "@/lib/calculator";
 
 export const Route = createFileRoute("/_authenticated/lektion/$lessonId")({
   head: () => ({
