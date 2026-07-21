@@ -7,6 +7,7 @@ export interface PublishedCourse {
   description: string | null;
   order_number: number;
   lessonCount: number;
+  lessonIds: string[];
 }
 
 export async function fetchPublishedCourses(): Promise<PublishedCourse[]> {
@@ -25,7 +26,57 @@ export async function fetchPublishedCourses(): Promise<PublishedCourse[]> {
     description: c.description,
     order_number: c.order_number,
     lessonCount: Array.isArray(c.lessons) ? c.lessons.length : 0,
+    lessonIds: Array.isArray(c.lessons)
+      ? (c.lessons as Array<{ id: string }>).map((l) => l.id)
+      : [],
   }));
+}
+
+export interface UserProgressRow {
+  lesson_id: string;
+  progress_percentage: number;
+  completed: boolean;
+}
+
+export async function fetchAllUserProgress(userId: string): Promise<UserProgressRow[]> {
+  const { data, error } = await supabase
+    .from("user_progress_saved_data")
+    .select("lesson_id, progress_percentage, completed")
+    .eq("user_id", userId);
+  if (error) throw error;
+  return (data ?? []) as UserProgressRow[];
+}
+
+export interface CoursesWithLessons extends PublishedCourse {
+  lessons: Array<{ id: string; title: string; order_number: number }>;
+}
+
+export async function fetchPublishedCoursesWithLessons(): Promise<CoursesWithLessons[]> {
+  const { data, error } = await supabase
+    .from("courses")
+    .select(
+      "id, slug, title, description, order_number, lessons(id, title, order_number)",
+    )
+    .eq("is_published", true)
+    .order("order_number", { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map((c) => {
+    const lessons = Array.isArray(c.lessons)
+      ? [...(c.lessons as Array<{ id: string; title: string; order_number: number }>)].sort(
+          (a, b) => a.order_number - b.order_number,
+        )
+      : [];
+    return {
+      id: c.id,
+      slug: c.slug,
+      title: c.title,
+      description: c.description,
+      order_number: c.order_number,
+      lessonCount: lessons.length,
+      lessonIds: lessons.map((l) => l.id),
+      lessons,
+    };
+  });
 }
 
 export interface CourseLesson {
