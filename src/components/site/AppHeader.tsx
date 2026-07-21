@@ -94,7 +94,12 @@ export function AppHeader() {
               <div className="mt-6 flex flex-col gap-4">
                 <NavLink to="/kurser" onClick={close}>Kurser</NavLink>
                 <NavLink to="/om-pongi" onClick={close}>Om Pongi</NavLink>
-                {user ? <NavLink to="/dashboard" onClick={close}>Min sida</NavLink> : null}
+                {user ? (
+                  <>
+                    <NavLink to="/dashboard" onClick={close}>Min sida</NavLink>
+                    <NavLink to="/profil" onClick={close}>Profil</NavLink>
+                  </>
+                ) : null}
                 <div className="mt-4 flex flex-col gap-2">
                   {user ? (
                     <Button variant="outline" onClick={() => { close(); signOut(); }}>
