@@ -57,7 +57,7 @@ export function AppHeader() {
           <NavLink to="/om-pongi">Om Pongi</NavLink>
           {user ? (
             <>
-              <NavLink to="/dashboard">Min sida</NavLink>
+              <NavLink to="/hem">Min sida</NavLink>
               <NavLink to="/profil">Profil</NavLink>
             </>
           ) : null}
@@ -71,10 +71,10 @@ export function AppHeader() {
           ) : (
             <>
               <Button asChild variant="ghost" size="sm">
-                <Link to="/auth">Logga in</Link>
+                <Link to="/logga-in">Logga in</Link>
               </Button>
               <Button asChild size="sm">
-                <Link to="/auth">Skapa konto</Link>
+                <Link to="/skapa-konto">Skapa konto</Link>
               </Button>
             </>
           )}
@@ -96,7 +96,7 @@ export function AppHeader() {
                 <NavLink to="/om-pongi" onClick={close}>Om Pongi</NavLink>
                 {user ? (
                   <>
-                    <NavLink to="/dashboard" onClick={close}>Min sida</NavLink>
+                    <NavLink to="/hem" onClick={close}>Min sida</NavLink>
                     <NavLink to="/profil" onClick={close}>Profil</NavLink>
                   </>
                 ) : null}
@@ -108,10 +108,10 @@ export function AppHeader() {
                   ) : (
                     <>
                       <Button asChild variant="outline" onClick={close}>
-                        <Link to="/auth">Logga in</Link>
+                        <Link to="/logga-in">Logga in</Link>
                       </Button>
                       <Button asChild onClick={close}>
-                        <Link to="/auth">Skapa konto</Link>
+                        <Link to="/skapa-konto">Skapa konto</Link>
                       </Button>
                     </>
                   )}
