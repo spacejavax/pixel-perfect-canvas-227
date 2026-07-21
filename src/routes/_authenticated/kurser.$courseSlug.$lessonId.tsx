@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, CheckCircle2, XCircle, Loader2, Calculator, BookMarked, ExternalLink } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, XCircle, Loader2, Calculator, BookMarked, ExternalLink } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { PageContainer } from "@/components/site/PageContainer";
 import { EmptyState } from "@/components/site/EmptyState";
@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/use-auth";
 import {
   fetchLessonById,
+  fetchLessonNav,
   fetchLessonProgress,
   markLessonCompleted,
   saveInteractionResponse,
@@ -45,6 +46,12 @@ function LessonPage() {
   const lessonQ = useQuery({
     queryKey: ["lesson", lessonId],
     queryFn: () => fetchLessonById(lessonId),
+  });
+  const courseId = lessonQ.data?.course.id;
+  const navQ = useQuery({
+    queryKey: ["lesson-nav", courseId, lessonId],
+    queryFn: () => fetchLessonNav(courseId!, lessonId),
+    enabled: !!courseId,
   });
   const progressQ = useQuery({
     queryKey: ["lesson-progress", user?.id, lessonId],
@@ -168,6 +175,35 @@ function LessonPage() {
             )}
           </div>
         </div>
+
+        {navQ.data && (navQ.data.prev || navQ.data.next) ? (
+          <div className="mt-6 flex flex-wrap items-stretch justify-between gap-3">
+            {navQ.data.prev ? (
+              <Link
+                to="/kurser/$courseSlug/$lessonId"
+                params={{ courseSlug: lesson.course.slug, lessonId: navQ.data.prev.id }}
+                className="group flex flex-1 min-w-[220px] flex-col rounded-xl border border-border/60 bg-card p-4 hover:border-primary/40 hover:bg-primary/5"
+              >
+                <span className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  <ArrowLeft className="h-3.5 w-3.5" /> Föregående
+                </span>
+                <span className="mt-1 text-sm font-semibold text-foreground group-hover:text-primary">{navQ.data.prev.title}</span>
+              </Link>
+            ) : <div className="flex-1 min-w-[220px]" />}
+            {navQ.data.next ? (
+              <Link
+                to="/kurser/$courseSlug/$lessonId"
+                params={{ courseSlug: lesson.course.slug, lessonId: navQ.data.next.id }}
+                className="group flex flex-1 min-w-[220px] flex-col items-end rounded-xl border border-border/60 bg-card p-4 text-right hover:border-primary/40 hover:bg-primary/5"
+              >
+                <span className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Nästa <ArrowRight className="h-3.5 w-3.5" />
+                </span>
+                <span className="mt-1 text-sm font-semibold text-foreground group-hover:text-primary">{navQ.data.next.title}</span>
+              </Link>
+            ) : <div className="flex-1 min-w-[220px]" />}
+          </div>
+        ) : null}
       </PageContainer>
     </SiteShell>
   );
