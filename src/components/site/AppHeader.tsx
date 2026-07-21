@@ -1,8 +1,10 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "./Logo";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Sheet,
   SheetContent,
@@ -35,6 +37,15 @@ function NavLink({
 export function AppHeader() {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  const router = useRouter();
+
+  async function signOut() {
+    await supabase.auth.signOut();
+    router.invalidate();
+    navigate({ to: "/" });
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
@@ -44,15 +55,24 @@ export function AppHeader() {
         <nav className="hidden items-center gap-8 md:flex" aria-label="Huvudmeny">
           <NavLink to="/kurser">Kurser</NavLink>
           <NavLink to="/om-pongi">Om Pongi</NavLink>
+          {user ? <NavLink to="/dashboard">Min sida</NavLink> : null}
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
-          <Button asChild variant="ghost" size="sm">
-            <Link to="/logga-in">Logga in</Link>
-          </Button>
-          <Button asChild size="sm">
-            <Link to="/skapa-konto">Skapa konto</Link>
-          </Button>
+          {loading ? null : user ? (
+            <Button variant="ghost" size="sm" onClick={signOut}>
+              Logga ut
+            </Button>
+          ) : (
+            <>
+              <Button asChild variant="ghost" size="sm">
+                <Link to="/auth">Logga in</Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link to="/auth">Skapa konto</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         <div className="md:hidden">
@@ -69,13 +89,22 @@ export function AppHeader() {
               <div className="mt-6 flex flex-col gap-4">
                 <NavLink to="/kurser" onClick={close}>Kurser</NavLink>
                 <NavLink to="/om-pongi" onClick={close}>Om Pongi</NavLink>
+                {user ? <NavLink to="/dashboard" onClick={close}>Min sida</NavLink> : null}
                 <div className="mt-4 flex flex-col gap-2">
-                  <Button asChild variant="outline" onClick={close}>
-                    <Link to="/logga-in">Logga in</Link>
-                  </Button>
-                  <Button asChild onClick={close}>
-                    <Link to="/skapa-konto">Skapa konto</Link>
-                  </Button>
+                  {user ? (
+                    <Button variant="outline" onClick={() => { close(); signOut(); }}>
+                      Logga ut
+                    </Button>
+                  ) : (
+                    <>
+                      <Button asChild variant="outline" onClick={close}>
+                        <Link to="/auth">Logga in</Link>
+                      </Button>
+                      <Button asChild onClick={close}>
+                        <Link to="/auth">Skapa konto</Link>
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             </SheetContent>

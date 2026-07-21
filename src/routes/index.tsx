@@ -60,7 +60,7 @@ function LandingPage() {
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Button asChild size="lg">
-                <Link to="/skapa-konto">
+                <Link to="/auth">
                   Kom igång gratis
                   <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
@@ -184,7 +184,7 @@ function LandingPage() {
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg" variant="secondary">
-                <Link to="/skapa-konto">Skapa ett konto</Link>
+                <Link to="/auth">Skapa ett konto</Link>
               </Button>
               <Button
                 asChild

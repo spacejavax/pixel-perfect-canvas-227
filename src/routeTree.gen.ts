@@ -11,9 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as OmPongiRouteImport } from './routes/om-pongi'
 import { Route as IntegritetRouteImport } from './routes/integritet'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as KurserIndexRouteImport } from './routes/kurser.index'
 import { Route as KurserCourseSlugRouteImport } from './routes/kurser.$courseSlug'
+import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 
 const OmPongiRoute = OmPongiRouteImport.update({
   id: '/om-pongi',
@@ -23,6 +27,15 @@ const OmPongiRoute = OmPongiRouteImport.update({
 const IntegritetRoute = IntegritetRouteImport.update({
   id: '/integritet',
   path: '/integritet',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -40,26 +53,46 @@ const KurserCourseSlugRoute = KurserCourseSlugRouteImport.update({
   path: '/kurser/$courseSlug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/integritet': typeof IntegritetRoute
   '/om-pongi': typeof OmPongiRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
   '/kurser/$courseSlug': typeof KurserCourseSlugRoute
   '/kurser/': typeof KurserIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/integritet': typeof IntegritetRoute
   '/om-pongi': typeof OmPongiRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
   '/kurser/$courseSlug': typeof KurserCourseSlugRoute
   '/kurser': typeof KurserIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
   '/integritet': typeof IntegritetRoute
   '/om-pongi': typeof OmPongiRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/kurser/$courseSlug': typeof KurserCourseSlugRoute
   '/kurser/': typeof KurserIndexRoute
 }
@@ -67,23 +100,40 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
     | '/integritet'
     | '/om-pongi'
+    | '/dashboard'
+    | '/onboarding'
     | '/kurser/$courseSlug'
     | '/kurser/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/integritet' | '/om-pongi' | '/kurser/$courseSlug' | '/kurser'
+  to:
+    | '/'
+    | '/auth'
+    | '/integritet'
+    | '/om-pongi'
+    | '/dashboard'
+    | '/onboarding'
+    | '/kurser/$courseSlug'
+    | '/kurser'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
+    | '/auth'
     | '/integritet'
     | '/om-pongi'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/onboarding'
     | '/kurser/$courseSlug'
     | '/kurser/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
   IntegritetRoute: typeof IntegritetRoute
   OmPongiRoute: typeof OmPongiRoute
   KurserCourseSlugRoute: typeof KurserCourseSlugRoute
@@ -104,6 +154,20 @@ declare module '@tanstack/react-router' {
       path: '/integritet'
       fullPath: '/integritet'
       preLoaderRoute: typeof IntegritetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -127,11 +191,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KurserCourseSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/onboarding': {
+      id: '/_authenticated/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
   IntegritetRoute: IntegritetRoute,
   OmPongiRoute: OmPongiRoute,
   KurserCourseSlugRoute: KurserCourseSlugRoute,

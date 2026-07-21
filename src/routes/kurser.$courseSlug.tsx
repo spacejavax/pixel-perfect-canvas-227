@@ -114,7 +114,7 @@ function CourseDetailPage() {
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <Button asChild size="lg">
               <Link
-                to="/logga-in"
+                to="/auth"
                 search={{ redirect: `/kurser/${course.slug}` }}
               >
                 Starta kursen
