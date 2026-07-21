@@ -152,27 +152,6 @@ function LandingPage() {
         </PageContainer>
       </section>
 
-      <section className="py-16">
-        <PageContainer>
-          <h2 className="text-2xl font-bold sm:text-3xl">Så funkar det</h2>
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
-            {[
-              { n: "1", t: "Välj en kurs", b: "Utgå från det du vill lära dig – från grunderna till investeringar." },
-              { n: "2", t: "Gör korta lektioner", b: "Läs, reflektera och svara på frågor i din egen takt." },
-              { n: "3", t: "Testa och tillämpa", b: "Praktiska övningar gör att kunskapen fastnar." },
-            ].map((s) => (
-              <div key={s.n} className="rounded-2xl border border-border/60 bg-card p-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/25 text-sm font-bold text-foreground">
-                  {s.n}
-                </div>
-                <h3 className="mt-4 text-lg font-semibold">{s.t}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{s.b}</p>
-              </div>
-            ))}
-          </div>
-        </PageContainer>
-      </section>
-
       <section className="py-20">
         <PageContainer>
           <div className="overflow-hidden rounded-3xl border border-border/60 bg-gradient-to-br from-primary to-primary/85 px-8 py-14 text-center text-primary-foreground shadow-lg">
