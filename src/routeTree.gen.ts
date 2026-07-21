@@ -18,6 +18,7 @@ import { Route as KurserIndexRouteImport } from './routes/kurser.index'
 import { Route as KurserCourseSlugRouteImport } from './routes/kurser.$courseSlug'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedLektionLessonIdRouteImport } from './routes/_authenticated/lektion.$lessonId'
 
 const OmPongiRoute = OmPongiRouteImport.update({
   id: '/om-pongi',
@@ -63,6 +64,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedLektionLessonIdRoute =
+  AuthenticatedLektionLessonIdRouteImport.update({
+    id: '/lektion/$lessonId',
+    path: '/lektion/$lessonId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/kurser/$courseSlug': typeof KurserCourseSlugRoute
   '/kurser/': typeof KurserIndexRoute
+  '/lektion/$lessonId': typeof AuthenticatedLektionLessonIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -83,6 +91,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/kurser/$courseSlug': typeof KurserCourseSlugRoute
   '/kurser': typeof KurserIndexRoute
+  '/lektion/$lessonId': typeof AuthenticatedLektionLessonIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -95,6 +104,7 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/kurser/$courseSlug': typeof KurserCourseSlugRoute
   '/kurser/': typeof KurserIndexRoute
+  '/_authenticated/lektion/$lessonId': typeof AuthenticatedLektionLessonIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/kurser/$courseSlug'
     | '/kurser/'
+    | '/lektion/$lessonId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/kurser/$courseSlug'
     | '/kurser'
+    | '/lektion/$lessonId'
   id:
     | '__root__'
     | '/'
@@ -128,6 +140,7 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding'
     | '/kurser/$courseSlug'
     | '/kurser/'
+    | '/_authenticated/lektion/$lessonId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -205,17 +218,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/lektion/$lessonId': {
+      id: '/_authenticated/lektion/$lessonId'
+      path: '/lektion/$lessonId'
+      fullPath: '/lektion/$lessonId'
+      preLoaderRoute: typeof AuthenticatedLektionLessonIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedLektionLessonIdRoute: typeof AuthenticatedLektionLessonIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedLektionLessonIdRoute: AuthenticatedLektionLessonIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

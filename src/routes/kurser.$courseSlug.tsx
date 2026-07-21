@@ -132,20 +132,27 @@ function CourseDetailPage() {
           <h2 className="text-xl font-bold">Lektioner</h2>
           <ol className="mt-4 divide-y divide-border/60 overflow-hidden rounded-2xl border border-border/60 bg-card">
             {course.lessons.map((lesson, i) => (
-              <li key={lesson.id} className="flex items-start gap-4 p-5 sm:p-6">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
-                  {i + 1}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <h3 className="text-base font-semibold text-foreground">
-                    {lesson.title}
-                  </h3>
-                  {lesson.description ? (
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {lesson.description}
-                    </p>
-                  ) : null}
-                </div>
+              <li key={lesson.id}>
+                <Link
+                  to="/_authenticated/lektion/$lessonId"
+                  params={{ lessonId: lesson.id }}
+                  className="flex items-start gap-4 p-5 transition-colors hover:bg-muted/40 sm:p-6"
+                >
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+                    {i + 1}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-base font-semibold text-foreground">
+                      {lesson.title}
+                    </h3>
+                    {lesson.description ? (
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {lesson.description}
+                      </p>
+                    ) : null}
+                  </div>
+                  <ArrowRight className="mt-1 h-4 w-4 text-muted-foreground" />
+                </Link>
               </li>
             ))}
           </ol>
