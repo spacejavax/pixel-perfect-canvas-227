@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 
 export interface LessonSection {
   id: string;
@@ -184,7 +185,7 @@ export async function submitQuizAnswer(
 export async function saveInteractionResponse(
   userId: string,
   interactionId: string,
-  answers: Record<string, unknown>,
+  answers: Json,
 ) {
   const { error } = await supabase
     .from("user_lesson_interaction_responses")
