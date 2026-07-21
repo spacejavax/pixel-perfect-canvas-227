@@ -22,8 +22,10 @@ import { Route as KurserIndexRouteImport } from './routes/kurser.index'
 import { Route as KurserCourseSlugRouteImport } from './routes/kurser.$courseSlug'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedHemRouteImport } from './routes/_authenticated/hem'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedLektionLessonIdRouteImport } from './routes/_authenticated/lektion.$lessonId'
+import { Route as AuthenticatedKurserCourseSlugLessonIdRouteImport } from './routes/_authenticated/kurser.$courseSlug.$lessonId'
 
 const SkapaKontoRoute = SkapaKontoRouteImport.update({
   id: '/skapa-konto',
@@ -89,6 +91,11 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedHemRoute = AuthenticatedHemRouteImport.update({
+  id: '/hem',
+  path: '/hem',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -98,6 +105,12 @@ const AuthenticatedLektionLessonIdRoute =
   AuthenticatedLektionLessonIdRouteImport.update({
     id: '/lektion/$lessonId',
     path: '/lektion/$lessonId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedKurserCourseSlugLessonIdRoute =
+  AuthenticatedKurserCourseSlugLessonIdRouteImport.update({
+    id: '/kurser/$courseSlug/$lessonId',
+    path: '/kurser/$courseSlug/$lessonId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
@@ -111,11 +124,13 @@ export interface FileRoutesByFullPath {
   '/om-pongi': typeof OmPongiRoute
   '/skapa-konto': typeof SkapaKontoRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/hem': typeof AuthenticatedHemRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/kurser/$courseSlug': typeof KurserCourseSlugRoute
   '/kurser/': typeof KurserIndexRoute
   '/lektion/$lessonId': typeof AuthenticatedLektionLessonIdRoute
+  '/kurser/$courseSlug/$lessonId': typeof AuthenticatedKurserCourseSlugLessonIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -127,11 +142,13 @@ export interface FileRoutesByTo {
   '/om-pongi': typeof OmPongiRoute
   '/skapa-konto': typeof SkapaKontoRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/hem': typeof AuthenticatedHemRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/kurser/$courseSlug': typeof KurserCourseSlugRoute
   '/kurser': typeof KurserIndexRoute
   '/lektion/$lessonId': typeof AuthenticatedLektionLessonIdRoute
+  '/kurser/$courseSlug/$lessonId': typeof AuthenticatedKurserCourseSlugLessonIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -145,11 +162,13 @@ export interface FileRoutesById {
   '/om-pongi': typeof OmPongiRoute
   '/skapa-konto': typeof SkapaKontoRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/hem': typeof AuthenticatedHemRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/kurser/$courseSlug': typeof KurserCourseSlugRoute
   '/kurser/': typeof KurserIndexRoute
   '/_authenticated/lektion/$lessonId': typeof AuthenticatedLektionLessonIdRoute
+  '/_authenticated/kurser/$courseSlug/$lessonId': typeof AuthenticatedKurserCourseSlugLessonIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -163,11 +182,13 @@ export interface FileRouteTypes {
     | '/om-pongi'
     | '/skapa-konto'
     | '/dashboard'
+    | '/hem'
     | '/onboarding'
     | '/profil'
     | '/kurser/$courseSlug'
     | '/kurser/'
     | '/lektion/$lessonId'
+    | '/kurser/$courseSlug/$lessonId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -179,11 +200,13 @@ export interface FileRouteTypes {
     | '/om-pongi'
     | '/skapa-konto'
     | '/dashboard'
+    | '/hem'
     | '/onboarding'
     | '/profil'
     | '/kurser/$courseSlug'
     | '/kurser'
     | '/lektion/$lessonId'
+    | '/kurser/$courseSlug/$lessonId'
   id:
     | '__root__'
     | '/'
@@ -196,11 +219,13 @@ export interface FileRouteTypes {
     | '/om-pongi'
     | '/skapa-konto'
     | '/_authenticated/dashboard'
+    | '/_authenticated/hem'
     | '/_authenticated/onboarding'
     | '/_authenticated/profil'
     | '/kurser/$courseSlug'
     | '/kurser/'
     | '/_authenticated/lektion/$lessonId'
+    | '/_authenticated/kurser/$courseSlug/$lessonId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -310,6 +335,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/hem': {
+      id: '/_authenticated/hem'
+      path: '/hem'
+      fullPath: '/hem'
+      preLoaderRoute: typeof AuthenticatedHemRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -324,21 +356,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLektionLessonIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/kurser/$courseSlug/$lessonId': {
+      id: '/_authenticated/kurser/$courseSlug/$lessonId'
+      path: '/kurser/$courseSlug/$lessonId'
+      fullPath: '/kurser/$courseSlug/$lessonId'
+      preLoaderRoute: typeof AuthenticatedKurserCourseSlugLessonIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedHemRoute: typeof AuthenticatedHemRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedLektionLessonIdRoute: typeof AuthenticatedLektionLessonIdRoute
+  AuthenticatedKurserCourseSlugLessonIdRoute: typeof AuthenticatedKurserCourseSlugLessonIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedHemRoute: AuthenticatedHemRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedLektionLessonIdRoute: AuthenticatedLektionLessonIdRoute,
+  AuthenticatedKurserCourseSlugLessonIdRoute:
+    AuthenticatedKurserCourseSlugLessonIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
