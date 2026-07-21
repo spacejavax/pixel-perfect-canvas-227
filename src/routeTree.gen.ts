@@ -9,38 +9,103 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as OmPongiRouteImport } from './routes/om-pongi'
+import { Route as IntegritetRouteImport } from './routes/integritet'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as KurserIndexRouteImport } from './routes/kurser.index'
+import { Route as KurserCourseSlugRouteImport } from './routes/kurser.$courseSlug'
 
+const OmPongiRoute = OmPongiRouteImport.update({
+  id: '/om-pongi',
+  path: '/om-pongi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IntegritetRoute = IntegritetRouteImport.update({
+  id: '/integritet',
+  path: '/integritet',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const KurserIndexRoute = KurserIndexRouteImport.update({
+  id: '/kurser/',
+  path: '/kurser/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KurserCourseSlugRoute = KurserCourseSlugRouteImport.update({
+  id: '/kurser/$courseSlug',
+  path: '/kurser/$courseSlug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/integritet': typeof IntegritetRoute
+  '/om-pongi': typeof OmPongiRoute
+  '/kurser/$courseSlug': typeof KurserCourseSlugRoute
+  '/kurser/': typeof KurserIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/integritet': typeof IntegritetRoute
+  '/om-pongi': typeof OmPongiRoute
+  '/kurser/$courseSlug': typeof KurserCourseSlugRoute
+  '/kurser': typeof KurserIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/integritet': typeof IntegritetRoute
+  '/om-pongi': typeof OmPongiRoute
+  '/kurser/$courseSlug': typeof KurserCourseSlugRoute
+  '/kurser/': typeof KurserIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/integritet'
+    | '/om-pongi'
+    | '/kurser/$courseSlug'
+    | '/kurser/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/integritet' | '/om-pongi' | '/kurser/$courseSlug' | '/kurser'
+  id:
+    | '__root__'
+    | '/'
+    | '/integritet'
+    | '/om-pongi'
+    | '/kurser/$courseSlug'
+    | '/kurser/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  IntegritetRoute: typeof IntegritetRoute
+  OmPongiRoute: typeof OmPongiRoute
+  KurserCourseSlugRoute: typeof KurserCourseSlugRoute
+  KurserIndexRoute: typeof KurserIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/om-pongi': {
+      id: '/om-pongi'
+      path: '/om-pongi'
+      fullPath: '/om-pongi'
+      preLoaderRoute: typeof OmPongiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integritet': {
+      id: '/integritet'
+      path: '/integritet'
+      fullPath: '/integritet'
+      preLoaderRoute: typeof IntegritetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +113,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/kurser/': {
+      id: '/kurser/'
+      path: '/kurser'
+      fullPath: '/kurser/'
+      preLoaderRoute: typeof KurserIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kurser/$courseSlug': {
+      id: '/kurser/$courseSlug'
+      path: '/kurser/$courseSlug'
+      fullPath: '/kurser/$courseSlug'
+      preLoaderRoute: typeof KurserCourseSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  IntegritetRoute: IntegritetRoute,
+  OmPongiRoute: OmPongiRoute,
+  KurserCourseSlugRoute: KurserCourseSlugRoute,
+  KurserIndexRoute: KurserIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -62,26 +62,32 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  --radius: 0.875rem;
+  /* Pongi brand — Scandinavian, credible, calm */
+  --background: oklch(0.976 0.008 95);          /* #F7F7F2 warm off-white */
+  --foreground: oklch(0.24 0.06 268);           /* #14213D deep navy */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
+  --card-foreground: oklch(0.24 0.06 268);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
+  --popover-foreground: oklch(0.24 0.06 268);
+  --primary: oklch(0.55 0.22 265);              /* #315CFF confident blue */
+  --primary-foreground: oklch(0.99 0.005 260);
+  --primary-hover: oklch(0.47 0.22 265);
+  --secondary: oklch(0.955 0.012 250);
+  --secondary-foreground: oklch(0.24 0.06 268);
+  --muted: oklch(0.955 0.012 250);
+  --muted-foreground: oklch(0.52 0.03 258);     /* #667085 accessible */
+  --accent: oklch(0.78 0.11 170);               /* #4BC6A4 mint/teal */
+  --accent-foreground: oklch(0.24 0.06 268);
+  --destructive: oklch(0.55 0.19 25);           /* accessible coral */
+  --destructive-foreground: oklch(0.99 0.005 260);
+  --warning: oklch(0.77 0.15 75);               /* warm amber */
+  --warning-foreground: oklch(0.24 0.06 268);
+  --success: oklch(0.62 0.14 165);
+  --success-foreground: oklch(0.99 0.005 260);
+  --border: oklch(0.9 0.015 255);
+  --input: oklch(0.9 0.015 255);
+  --ring: oklch(0.55 0.22 265);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -140,5 +146,20 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: 'Manrope', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    font-feature-settings: 'ss01', 'cv11';
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4 {
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    color: var(--color-foreground);
+  }
+
+  .prose-lesson {
+    max-width: 68ch;
+    line-height: 1.65;
   }
 }
