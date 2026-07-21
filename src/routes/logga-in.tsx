@@ -1,11 +1,9 @@
-import { createFileRoute, Link, useNavigate, useRouter, useSearch } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteShell } from "@/components/site/SiteShell";
 import { PageContainer } from "@/components/site/PageContainer";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import logoAsset from "@/assets/pongi-logo.png.asset.json";
 
@@ -32,10 +30,7 @@ export const Route = createFileRoute("/logga-in")({
 
 function LoginPage() {
   const navigate = useNavigate();
-  const router = useRouter();
   const search = useSearch({ from: "/logga-in" });
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -44,18 +39,17 @@ function LoginPage() {
     });
   }, [navigate, search.redirect]);
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function signInWithGoogle() {
     setSubmitting(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw new Error("Fel e-post eller lösenord.");
-      toast.success("Välkommen tillbaka!");
-      router.invalidate();
-      navigate({ to: safeRedirect(search.redirect) });
+      const redirectTo = `${window.location.origin}${safeRedirect(search.redirect)}`;
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo },
+      });
+      if (error) throw error;
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Något gick fel.");
-    } finally {
+      toast.error(err instanceof Error ? err.message : "Kunde inte logga in.");
       setSubmitting(false);
     }
   }
@@ -71,24 +65,12 @@ function LoginPage() {
               <p className="text-sm text-muted-foreground">Fortsätt där du slutade.</p>
             </div>
           </div>
-          <form onSubmit={onSubmit} className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="email">E-post</Label>
-              <Input id="email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="password">Lösenord</Label>
-              <Input id="password" type="password" required minLength={6} autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
-            </div>
-            <div className="flex justify-end">
-              <Link to="/glomt-losenord" className="text-xs font-medium text-primary hover:underline">
-                Glömt lösenordet?
-              </Link>
-            </div>
-            <Button type="submit" className="w-full" disabled={submitting}>
-              {submitting ? "Vänta…" : "Logga in"}
-            </Button>
-          </form>
+          <Button type="button" className="w-full" onClick={signInWithGoogle} disabled={submitting}>
+            {submitting ? "Vänta…" : "Fortsätt med Google"}
+          </Button>
+          <p className="mt-4 text-center text-xs text-muted-foreground">
+            Vi använder Google för säker inloggning. Vi delar aldrig din information.
+          </p>
           <p className="mt-6 text-center text-sm text-muted-foreground">
             Har du inget konto?{" "}
             <Link to="/skapa-konto" className="font-medium text-primary hover:underline">
