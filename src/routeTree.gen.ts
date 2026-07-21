@@ -13,8 +13,6 @@ import { Route as SkapaKontoRouteImport } from './routes/skapa-konto'
 import { Route as OmPongiRouteImport } from './routes/om-pongi'
 import { Route as LoggaInRouteImport } from './routes/logga-in'
 import { Route as IntegritetRouteImport } from './routes/integritet'
-import { Route as GlomtLosenordRouteImport } from './routes/glomt-losenord'
-import { Route as AterstallLosenordRouteImport } from './routes/aterstall-losenord'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as KurserIndexRouteImport } from './routes/kurser.index'
@@ -42,16 +40,6 @@ const LoggaInRoute = LoggaInRouteImport.update({
 const IntegritetRoute = IntegritetRouteImport.update({
   id: '/integritet',
   path: '/integritet',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GlomtLosenordRoute = GlomtLosenordRouteImport.update({
-  id: '/glomt-losenord',
-  path: '/glomt-losenord',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AterstallLosenordRoute = AterstallLosenordRouteImport.update({
-  id: '/aterstall-losenord',
-  path: '/aterstall-losenord',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -97,8 +85,6 @@ const AuthenticatedKurserCourseSlugLessonIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/aterstall-losenord': typeof AterstallLosenordRoute
-  '/glomt-losenord': typeof GlomtLosenordRoute
   '/integritet': typeof IntegritetRoute
   '/logga-in': typeof LoggaInRoute
   '/om-pongi': typeof OmPongiRoute
@@ -112,8 +98,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/aterstall-losenord': typeof AterstallLosenordRoute
-  '/glomt-losenord': typeof GlomtLosenordRoute
   '/integritet': typeof IntegritetRoute
   '/logga-in': typeof LoggaInRoute
   '/om-pongi': typeof OmPongiRoute
@@ -129,8 +113,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/aterstall-losenord': typeof AterstallLosenordRoute
-  '/glomt-losenord': typeof GlomtLosenordRoute
   '/integritet': typeof IntegritetRoute
   '/logga-in': typeof LoggaInRoute
   '/om-pongi': typeof OmPongiRoute
@@ -146,8 +128,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/aterstall-losenord'
-    | '/glomt-losenord'
     | '/integritet'
     | '/logga-in'
     | '/om-pongi'
@@ -161,8 +141,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/aterstall-losenord'
-    | '/glomt-losenord'
     | '/integritet'
     | '/logga-in'
     | '/om-pongi'
@@ -177,8 +155,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
-    | '/aterstall-losenord'
-    | '/glomt-losenord'
     | '/integritet'
     | '/logga-in'
     | '/om-pongi'
@@ -194,8 +170,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  AterstallLosenordRoute: typeof AterstallLosenordRoute
-  GlomtLosenordRoute: typeof GlomtLosenordRoute
   IntegritetRoute: typeof IntegritetRoute
   LoggaInRoute: typeof LoggaInRoute
   OmPongiRoute: typeof OmPongiRoute
@@ -232,20 +206,6 @@ declare module '@tanstack/react-router' {
       path: '/integritet'
       fullPath: '/integritet'
       preLoaderRoute: typeof IntegritetRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/glomt-losenord': {
-      id: '/glomt-losenord'
-      path: '/glomt-losenord'
-      fullPath: '/glomt-losenord'
-      preLoaderRoute: typeof GlomtLosenordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/aterstall-losenord': {
-      id: '/aterstall-losenord'
-      path: '/aterstall-losenord'
-      fullPath: '/aterstall-losenord'
-      preLoaderRoute: typeof AterstallLosenordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -328,8 +288,6 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  AterstallLosenordRoute: AterstallLosenordRoute,
-  GlomtLosenordRoute: GlomtLosenordRoute,
   IntegritetRoute: IntegritetRoute,
   LoggaInRoute: LoggaInRoute,
   OmPongiRoute: OmPongiRoute,
