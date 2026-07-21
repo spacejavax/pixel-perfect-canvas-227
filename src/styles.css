@@ -63,31 +63,31 @@
 
 :root {
   --radius: 0.875rem;
-  /* Pongi brand — Scandinavian, credible, calm */
-  --background: oklch(0.976 0.008 95);          /* #F7F7F2 warm off-white */
-  --foreground: oklch(0.24 0.06 268);           /* #14213D deep navy */
+  /* Pongi brand — deep forest green from logo */
+  --background: oklch(0.976 0.008 95);          /* warm off-white */
+  --foreground: oklch(0.22 0.04 165);           /* deep green-ink */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.24 0.06 268);
+  --card-foreground: oklch(0.22 0.04 165);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.24 0.06 268);
-  --primary: oklch(0.55 0.22 265);              /* #315CFF confident blue */
-  --primary-foreground: oklch(0.99 0.005 260);
-  --primary-hover: oklch(0.47 0.22 265);
-  --secondary: oklch(0.955 0.012 250);
-  --secondary-foreground: oklch(0.24 0.06 268);
-  --muted: oklch(0.955 0.012 250);
-  --muted-foreground: oklch(0.52 0.03 258);     /* #667085 accessible */
-  --accent: oklch(0.78 0.11 170);               /* #4BC6A4 mint/teal */
-  --accent-foreground: oklch(0.24 0.06 268);
-  --destructive: oklch(0.55 0.19 25);           /* accessible coral */
+  --popover-foreground: oklch(0.22 0.04 165);
+  --primary: oklch(0.30 0.06 160);              /* logo forest green */
+  --primary-foreground: oklch(0.99 0.005 160);
+  --primary-hover: oklch(0.24 0.06 160);
+  --secondary: oklch(0.955 0.012 165);
+  --secondary-foreground: oklch(0.22 0.04 165);
+  --muted: oklch(0.955 0.012 165);
+  --muted-foreground: oklch(0.50 0.03 165);
+  --accent: oklch(0.78 0.11 170);               /* mint accent */
+  --accent-foreground: oklch(0.22 0.04 165);
+  --destructive: oklch(0.55 0.19 25);
   --destructive-foreground: oklch(0.99 0.005 260);
-  --warning: oklch(0.77 0.15 75);               /* warm amber */
-  --warning-foreground: oklch(0.24 0.06 268);
+  --warning: oklch(0.77 0.15 75);
+  --warning-foreground: oklch(0.22 0.04 165);
   --success: oklch(0.62 0.14 165);
   --success-foreground: oklch(0.99 0.005 260);
-  --border: oklch(0.9 0.015 255);
-  --input: oklch(0.9 0.015 255);
-  --ring: oklch(0.55 0.22 265);
+  --border: oklch(0.9 0.012 165);
+  --input: oklch(0.9 0.012 165);
+  --ring: oklch(0.30 0.06 160);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);

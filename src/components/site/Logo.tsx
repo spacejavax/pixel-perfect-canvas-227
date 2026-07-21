@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import logoAsset from "@/assets/pongi-logo.png.asset.json";
 
 export function Logo({ to = "/" }: { to?: string }) {
   return (
@@ -7,12 +8,12 @@ export function Logo({ to = "/" }: { to?: string }) {
       className="flex items-center gap-2 text-lg font-extrabold tracking-tight text-foreground"
       aria-label="Pongi startsida"
     >
-      <span
+      <img
+        src={logoAsset.url}
+        alt=""
         aria-hidden
-        className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-primary-foreground"
-      >
-        <span className="text-sm font-black">P</span>
-      </span>
+        className="h-9 w-9 rounded-xl"
+      />
       <span>Pongi</span>
     </Link>
   );
