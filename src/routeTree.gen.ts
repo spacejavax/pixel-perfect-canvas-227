@@ -16,6 +16,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as KurserIndexRouteImport } from './routes/kurser.index'
 import { Route as KurserCourseSlugRouteImport } from './routes/kurser.$courseSlug'
+import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedLektionLessonIdRouteImport } from './routes/_authenticated/lektion.$lessonId'
@@ -54,6 +55,11 @@ const KurserCourseSlugRoute = KurserCourseSlugRouteImport.update({
   path: '/kurser/$courseSlug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/om-pongi': typeof OmPongiRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/profil': typeof AuthenticatedProfilRoute
   '/kurser/$courseSlug': typeof KurserCourseSlugRoute
   '/kurser/': typeof KurserIndexRoute
   '/lektion/$lessonId': typeof AuthenticatedLektionLessonIdRoute
@@ -89,6 +96,7 @@ export interface FileRoutesByTo {
   '/om-pongi': typeof OmPongiRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/profil': typeof AuthenticatedProfilRoute
   '/kurser/$courseSlug': typeof KurserCourseSlugRoute
   '/kurser': typeof KurserIndexRoute
   '/lektion/$lessonId': typeof AuthenticatedLektionLessonIdRoute
@@ -102,6 +110,7 @@ export interface FileRoutesById {
   '/om-pongi': typeof OmPongiRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/kurser/$courseSlug': typeof KurserCourseSlugRoute
   '/kurser/': typeof KurserIndexRoute
   '/_authenticated/lektion/$lessonId': typeof AuthenticatedLektionLessonIdRoute
@@ -115,6 +124,7 @@ export interface FileRouteTypes {
     | '/om-pongi'
     | '/dashboard'
     | '/onboarding'
+    | '/profil'
     | '/kurser/$courseSlug'
     | '/kurser/'
     | '/lektion/$lessonId'
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
     | '/om-pongi'
     | '/dashboard'
     | '/onboarding'
+    | '/profil'
     | '/kurser/$courseSlug'
     | '/kurser'
     | '/lektion/$lessonId'
@@ -138,6 +149,7 @@ export interface FileRouteTypes {
     | '/om-pongi'
     | '/_authenticated/dashboard'
     | '/_authenticated/onboarding'
+    | '/_authenticated/profil'
     | '/kurser/$courseSlug'
     | '/kurser/'
     | '/_authenticated/lektion/$lessonId'
@@ -204,6 +216,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KurserCourseSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/profil': {
+      id: '/_authenticated/profil'
+      path: '/profil'
+      fullPath: '/profil'
+      preLoaderRoute: typeof AuthenticatedProfilRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/onboarding': {
       id: '/_authenticated/onboarding'
       path: '/onboarding'
@@ -231,12 +250,14 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedLektionLessonIdRoute: typeof AuthenticatedLektionLessonIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedLektionLessonIdRoute: AuthenticatedLektionLessonIdRoute,
 }
 

@@ -55,7 +55,12 @@ export function AppHeader() {
         <nav className="hidden items-center gap-8 md:flex" aria-label="Huvudmeny">
           <NavLink to="/kurser">Kurser</NavLink>
           <NavLink to="/om-pongi">Om Pongi</NavLink>
-          {user ? <NavLink to="/dashboard">Min sida</NavLink> : null}
+          {user ? (
+            <>
+              <NavLink to="/dashboard">Min sida</NavLink>
+              <NavLink to="/profil">Profil</NavLink>
+            </>
+          ) : null}
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
