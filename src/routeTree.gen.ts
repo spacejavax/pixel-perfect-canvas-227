@@ -14,7 +14,6 @@ import { Route as OmPongiRouteImport } from './routes/om-pongi'
 import { Route as LoggaInRouteImport } from './routes/logga-in'
 import { Route as IntegritetRouteImport } from './routes/integritet'
 import { Route as GlomtLosenordRouteImport } from './routes/glomt-losenord'
-import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AterstallLosenordRouteImport } from './routes/aterstall-losenord'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -23,8 +22,6 @@ import { Route as KurserCourseSlugRouteImport } from './routes/kurser.$courseSlu
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedHemRouteImport } from './routes/_authenticated/hem'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedLektionLessonIdRouteImport } from './routes/_authenticated/lektion.$lessonId'
 import { Route as AuthenticatedKurserCourseSlugLessonIdRouteImport } from './routes/_authenticated/kurser.$courseSlug.$lessonId'
 
 const SkapaKontoRoute = SkapaKontoRouteImport.update({
@@ -50,11 +47,6 @@ const IntegritetRoute = IntegritetRouteImport.update({
 const GlomtLosenordRoute = GlomtLosenordRouteImport.update({
   id: '/glomt-losenord',
   path: '/glomt-losenord',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AterstallLosenordRoute = AterstallLosenordRouteImport.update({
@@ -96,17 +88,6 @@ const AuthenticatedHemRoute = AuthenticatedHemRouteImport.update({
   path: '/hem',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedLektionLessonIdRoute =
-  AuthenticatedLektionLessonIdRouteImport.update({
-    id: '/lektion/$lessonId',
-    path: '/lektion/$lessonId',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedKurserCourseSlugLessonIdRoute =
   AuthenticatedKurserCourseSlugLessonIdRouteImport.update({
     id: '/kurser/$courseSlug/$lessonId',
@@ -117,37 +98,31 @@ const AuthenticatedKurserCourseSlugLessonIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/aterstall-losenord': typeof AterstallLosenordRoute
-  '/auth': typeof AuthRoute
   '/glomt-losenord': typeof GlomtLosenordRoute
   '/integritet': typeof IntegritetRoute
   '/logga-in': typeof LoggaInRoute
   '/om-pongi': typeof OmPongiRoute
   '/skapa-konto': typeof SkapaKontoRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
   '/hem': typeof AuthenticatedHemRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/kurser/$courseSlug': typeof KurserCourseSlugRoute
   '/kurser/': typeof KurserIndexRoute
-  '/lektion/$lessonId': typeof AuthenticatedLektionLessonIdRoute
   '/kurser/$courseSlug/$lessonId': typeof AuthenticatedKurserCourseSlugLessonIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/aterstall-losenord': typeof AterstallLosenordRoute
-  '/auth': typeof AuthRoute
   '/glomt-losenord': typeof GlomtLosenordRoute
   '/integritet': typeof IntegritetRoute
   '/logga-in': typeof LoggaInRoute
   '/om-pongi': typeof OmPongiRoute
   '/skapa-konto': typeof SkapaKontoRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
   '/hem': typeof AuthenticatedHemRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/kurser/$courseSlug': typeof KurserCourseSlugRoute
   '/kurser': typeof KurserIndexRoute
-  '/lektion/$lessonId': typeof AuthenticatedLektionLessonIdRoute
   '/kurser/$courseSlug/$lessonId': typeof AuthenticatedKurserCourseSlugLessonIdRoute
 }
 export interface FileRoutesById {
@@ -155,19 +130,16 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/aterstall-losenord': typeof AterstallLosenordRoute
-  '/auth': typeof AuthRoute
   '/glomt-losenord': typeof GlomtLosenordRoute
   '/integritet': typeof IntegritetRoute
   '/logga-in': typeof LoggaInRoute
   '/om-pongi': typeof OmPongiRoute
   '/skapa-konto': typeof SkapaKontoRoute
-  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/hem': typeof AuthenticatedHemRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/kurser/$courseSlug': typeof KurserCourseSlugRoute
   '/kurser/': typeof KurserIndexRoute
-  '/_authenticated/lektion/$lessonId': typeof AuthenticatedLektionLessonIdRoute
   '/_authenticated/kurser/$courseSlug/$lessonId': typeof AuthenticatedKurserCourseSlugLessonIdRoute
 }
 export interface FileRouteTypes {
@@ -175,56 +147,47 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/aterstall-losenord'
-    | '/auth'
     | '/glomt-losenord'
     | '/integritet'
     | '/logga-in'
     | '/om-pongi'
     | '/skapa-konto'
-    | '/dashboard'
     | '/hem'
     | '/onboarding'
     | '/profil'
     | '/kurser/$courseSlug'
     | '/kurser/'
-    | '/lektion/$lessonId'
     | '/kurser/$courseSlug/$lessonId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/aterstall-losenord'
-    | '/auth'
     | '/glomt-losenord'
     | '/integritet'
     | '/logga-in'
     | '/om-pongi'
     | '/skapa-konto'
-    | '/dashboard'
     | '/hem'
     | '/onboarding'
     | '/profil'
     | '/kurser/$courseSlug'
     | '/kurser'
-    | '/lektion/$lessonId'
     | '/kurser/$courseSlug/$lessonId'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/aterstall-losenord'
-    | '/auth'
     | '/glomt-losenord'
     | '/integritet'
     | '/logga-in'
     | '/om-pongi'
     | '/skapa-konto'
-    | '/_authenticated/dashboard'
     | '/_authenticated/hem'
     | '/_authenticated/onboarding'
     | '/_authenticated/profil'
     | '/kurser/$courseSlug'
     | '/kurser/'
-    | '/_authenticated/lektion/$lessonId'
     | '/_authenticated/kurser/$courseSlug/$lessonId'
   fileRoutesById: FileRoutesById
 }
@@ -232,7 +195,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AterstallLosenordRoute: typeof AterstallLosenordRoute
-  AuthRoute: typeof AuthRoute
   GlomtLosenordRoute: typeof GlomtLosenordRoute
   IntegritetRoute: typeof IntegritetRoute
   LoggaInRoute: typeof LoggaInRoute
@@ -277,13 +239,6 @@ declare module '@tanstack/react-router' {
       path: '/glomt-losenord'
       fullPath: '/glomt-losenord'
       preLoaderRoute: typeof GlomtLosenordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/aterstall-losenord': {
@@ -342,20 +297,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHemRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/lektion/$lessonId': {
-      id: '/_authenticated/lektion/$lessonId'
-      path: '/lektion/$lessonId'
-      fullPath: '/lektion/$lessonId'
-      preLoaderRoute: typeof AuthenticatedLektionLessonIdRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/kurser/$courseSlug/$lessonId': {
       id: '/_authenticated/kurser/$courseSlug/$lessonId'
       path: '/kurser/$courseSlug/$lessonId'
@@ -367,20 +308,16 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedHemRoute: typeof AuthenticatedHemRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
-  AuthenticatedLektionLessonIdRoute: typeof AuthenticatedLektionLessonIdRoute
   AuthenticatedKurserCourseSlugLessonIdRoute: typeof AuthenticatedKurserCourseSlugLessonIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedHemRoute: AuthenticatedHemRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
-  AuthenticatedLektionLessonIdRoute: AuthenticatedLektionLessonIdRoute,
   AuthenticatedKurserCourseSlugLessonIdRoute:
     AuthenticatedKurserCourseSlugLessonIdRoute,
 }
@@ -392,7 +329,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AterstallLosenordRoute: AterstallLosenordRoute,
-  AuthRoute: AuthRoute,
   GlomtLosenordRoute: GlomtLosenordRoute,
   IntegritetRoute: IntegritetRoute,
   LoggaInRoute: LoggaInRoute,
