@@ -751,6 +751,17 @@ export type Database = {
           total_questions: number
         }[]
       }
+      submit_lesson_interaction_response: {
+        Args: { p_answers: Json; p_interaction_id: string }
+        Returns: {
+          answers: Json
+          completed: boolean
+          interaction_id: string
+          lesson_completed: boolean
+          lesson_progress_percentage: number
+          response_id: string
+        }[]
+      }
       submit_lesson_quiz_answer: {
         Args: { p_answer_id: string; p_question_id: string }
         Returns: {
