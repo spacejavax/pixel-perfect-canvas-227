@@ -198,19 +198,6 @@ export async function fetchLessonProgress(userId: string, lessonId: string) {
   return data;
 }
 
-export async function markLessonCompleted(userId: string, lessonId: string) {
-  const { error } = await supabase.from("user_progress_saved_data").upsert(
-    {
-      user_id: userId,
-      lesson_id: lessonId,
-      completed: true,
-      progress_percentage: 100,
-    },
-    { onConflict: "user_id,lesson_id" },
-  );
-  if (error) throw error;
-}
-
 export interface SubmitAnswerResult {
   selected_answer_id: string;
   is_correct: boolean;
@@ -243,21 +230,13 @@ export async function submitQuizAnswer(
 }
 
 export async function saveInteractionResponse(
-  userId: string,
   interactionId: string,
   answers: Json,
 ) {
-  const { error } = await supabase
-    .from("user_lesson_interaction_responses")
-    .upsert(
-      {
-        user_id: userId,
-        interaction_id: interactionId,
-        answers,
-        completed: true,
-      },
-      { onConflict: "user_id,interaction_id" },
-    );
+  const { error } = await supabase.rpc("submit_lesson_interaction_response", {
+    p_interaction_id: interactionId,
+    p_answers: answers,
+  });
   if (error) throw error;
 }
 

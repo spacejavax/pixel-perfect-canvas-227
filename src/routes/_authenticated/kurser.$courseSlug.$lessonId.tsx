@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight, CheckCircle2, XCircle, Loader2, Calculator, BookMarked, ExternalLink } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { PageContainer } from "@/components/site/PageContainer";
@@ -13,7 +13,6 @@ import {
   fetchLessonById,
   fetchLessonNav,
   fetchLessonProgress,
-  markLessonCompleted,
   saveInteractionResponse,
   submitQuizAnswer,
   type LessonInteraction,
@@ -40,7 +39,6 @@ export const Route = createFileRoute("/_authenticated/kurser/$courseSlug/$lesson
 function LessonPage() {
   const { courseSlug, lessonId } = Route.useParams();
   const { user } = useAuth();
-  const qc = useQueryClient();
   const navigate = useNavigate();
 
   const lessonQ = useQuery({
@@ -57,14 +55,6 @@ function LessonPage() {
     queryKey: ["lesson-progress", user?.id, lessonId],
     queryFn: () => fetchLessonProgress(user!.id, lessonId),
     enabled: !!user,
-  });
-
-  const completeMut = useMutation({
-    mutationFn: () => markLessonCompleted(user!.id, lessonId),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["lesson-progress"] });
-      qc.invalidateQueries({ queryKey: ["progress-all"] });
-    },
   });
 
   if (lessonQ.isLoading) {
@@ -160,19 +150,15 @@ function LessonPage() {
           <div>
             <h3 className="text-lg font-semibold">{isCompleted ? "Bra jobbat!" : "Klar med lektionen?"}</h3>
             <p className="text-sm text-muted-foreground">
-              {isCompleted ? "Du har slutfört den här lektionen." : "Markera lektionen som slutförd när du gått igenom innehållet."}
+              {isCompleted
+                ? "Du har slutfört den här lektionen."
+                : "Din progress uppdateras automatiskt när du svarar på frågor och övningar."}
             </p>
           </div>
           <div className="flex gap-3">
             <Button variant="outline" onClick={() => navigate({ to: "/kurser/$courseSlug", params: { courseSlug: lesson.course.slug } })}>
               Till kursen
             </Button>
-            {!isCompleted && (
-              <Button onClick={() => completeMut.mutate()} disabled={completeMut.isPending}>
-                {completeMut.isPending ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}
-                Markera som slutförd
-              </Button>
-            )}
           </div>
         </div>
 
@@ -366,7 +352,7 @@ function InteractionBlock({ interaction, userId }: { interaction: LessonInteract
     setSaving(true);
     setError(undefined);
     try {
-      await saveInteractionResponse(userId, interaction.id, values);
+      await saveInteractionResponse(interaction.id, values);
       setSaved(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Kunde inte spara");
