@@ -361,6 +361,10 @@ function QuizBlock({ quiz, final }: { quiz: LessonQuiz; final?: boolean }) {
       const isCorrect = correctAnswerId ? picked === correctAnswerId : meta.is_correct;
       setState((prev) => {
         const cur = prev[questionId] ?? {};
+        const nextWrongIds = isCorrect
+          ? cur.wrongIds ?? []
+          : Array.from(new Set([...(cur.wrongIds ?? []), picked]));
+        const nextRevealed = isCorrect || nextWrongIds.length >= 2;
         return {
           ...prev,
           [questionId]: {
@@ -368,10 +372,8 @@ function QuizBlock({ quiz, final }: { quiz: LessonQuiz; final?: boolean }) {
             submitting: false,
             meta,
             solved: isCorrect,
-            selectedId: correctAnswerId ?? (isCorrect ? picked : undefined),
-            wrongIds: isCorrect
-              ? cur.wrongIds ?? []
-              : Array.from(new Set([...(cur.wrongIds ?? []), picked])),
+            selectedId: nextRevealed ? (correctAnswerId ?? (isCorrect ? picked : undefined)) : undefined,
+            wrongIds: nextWrongIds,
           },
         };
       });
