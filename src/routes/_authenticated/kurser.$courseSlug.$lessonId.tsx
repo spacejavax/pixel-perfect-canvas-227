@@ -457,10 +457,25 @@ function QuizBlock({ quiz, final }: { quiz: LessonQuiz; final?: boolean }) {
                 );
               })}
             </div>
-            {locked ? (
+            {revealed ? (
               <div className="mt-4 space-y-3">
-                <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 p-3 text-sm">
-                  <p className="font-semibold">Rätt svar!</p>
+                <div
+                  className={[
+                    "rounded-lg border p-3 text-sm",
+                    s.solved
+                      ? "border-emerald-500/40 bg-emerald-500/10"
+                      : "border-border/60 bg-muted/50",
+                  ].join(" ")}
+                >
+                  <p className="font-semibold">
+                    {s.solved ? "Rätt svar!" : "Inte riktigt — här är rätt svar."}
+                  </p>
+                  {!s.solved && s.meta?.correct_answer_id ? (
+                    <p className="mt-1">
+                      <span className="font-medium">Rätt svar:</span>{" "}
+                      {q.answers.find((a) => a.id === s.meta?.correct_answer_id)?.answer ?? s.meta?.correct_answer}
+                    </p>
+                  ) : null}
                   {s.meta?.explanation ?? q.explanation ? (
                     <p className="mt-2 text-muted-foreground">
                       <span className="font-medium text-foreground">Varför:</span>{" "}
@@ -480,11 +495,11 @@ function QuizBlock({ quiz, final }: { quiz: LessonQuiz; final?: boolean }) {
               </div>
             ) : (
               <div className="mt-3 space-y-3">
-                {wrongIds.length > 0 ? (
+                {wrongIds.length === 1 ? (
                   <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm">
                     <p className="font-semibold">Inte riktigt — försök igen.</p>
                     <p className="mt-1 text-muted-foreground">
-                      Välj ett annat alternativ och svara på nytt.
+                      Du har ett försök kvar. Välj ett annat alternativ.
                     </p>
                   </div>
                 ) : null}
