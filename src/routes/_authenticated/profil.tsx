@@ -204,6 +204,8 @@ function ProfilePage() {
               </div>
             </form>
 
+            <CertificatesSection enabled />
+
             <div className="rounded-2xl border border-destructive/20 bg-destructive/5 p-6">
               <h2 className="text-lg font-semibold">Logga ut</h2>
               <p className="mt-1 text-sm text-muted-foreground">
