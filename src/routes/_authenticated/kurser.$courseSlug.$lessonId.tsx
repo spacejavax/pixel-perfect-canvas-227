@@ -119,7 +119,7 @@ function LessonPage() {
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Lektion {lesson.order_number}
           </p>
-          <h1 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{lesson.title}</h1>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight">{lesson.title}</h1>
           {lesson.description ? <p className="mt-3 text-lg text-muted-foreground">{lesson.description}</p> : null}
           {isCompleted ? (
             <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">

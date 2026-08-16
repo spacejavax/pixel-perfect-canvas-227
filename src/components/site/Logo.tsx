@@ -5,7 +5,7 @@ export function Logo({ to = "/" }: { to?: string }) {
   return (
     <Link
       to={to}
-      className="flex items-center gap-2 text-lg font-extrabold tracking-tight text-foreground"
+      className="flex items-center gap-2 text-lg font-bold tracking-tight text-foreground"
       aria-label="Pongi startsida"
     >
       <img

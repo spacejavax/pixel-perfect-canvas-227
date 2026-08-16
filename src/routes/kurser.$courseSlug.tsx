@@ -103,7 +103,7 @@ function CourseDetailPage() {
             <BookOpen className="h-3.5 w-3.5 text-primary" />
             Kurs
           </span>
-          <h1 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
+          <h1 className="mt-4 text-3xl font-bold tracking-tight">
             {course.title}
           </h1>
           {course.description ? (

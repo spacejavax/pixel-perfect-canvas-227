@@ -25,7 +25,7 @@ function AboutPage() {
   return (
     <SiteShell>
       <PageContainer narrow className="py-16">
-        <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
+        <h1 className="text-3xl font-bold tracking-tight">
           Om Pongi
         </h1>
         <div className="prose-lesson mt-6 space-y-4 text-foreground/90">
