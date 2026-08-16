@@ -5,7 +5,7 @@ import { SiteShell } from "@/components/site/SiteShell";
 import { PageContainer } from "@/components/site/PageContainer";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import logoAsset from "@/assets/pongi-logo.png.asset.json";
+
 
 function safeRedirect(r: unknown): string {
   return typeof r === "string" && r.startsWith("/") && !r.startsWith("//") ? r : "/hem";
@@ -58,7 +58,7 @@ function LoginPage() {
       <PageContainer narrow className="py-14">
         <div className="mx-auto max-w-md rounded-2xl border border-border bg-card p-8 shadow-sm">
           <div className="mb-6 flex items-center gap-3">
-            <img src={logoAsset.url} alt="" aria-hidden className="h-10 w-10 rounded-xl" />
+            <img src="/pongi-logo.png" alt="" aria-hidden className="h-10 w-10 rounded-xl" />
             <div>
               <h1 className="text-xl font-bold tracking-tight">Logga in</h1>
               <p className="text-sm text-muted-foreground">Fortsätt där du slutade.</p>
