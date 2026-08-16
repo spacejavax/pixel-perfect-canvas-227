@@ -1,24 +1,24 @@
-# Pixel Perfect
+# Pongi
 
-Implement exactly the screenshot and nothing else
+Pongi är en svensk plattform som hjälper unga att förstå privatekonomi genom korta lektioner, quiz och praktiska verktyg i Money Lab.
 
-This project was built with [Lovable](https://lovable.dev).
+Projektet är byggt med [Lovable](https://lovable.dev) och använder Supabase för autentisering, kursdata och sparad progression.
 
-## Build with Lovable
+## Utveckla med Lovable
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/fa35fb7e-de9d-4075-bae3-4b95c7719689).
+Fortsätt utveckla projektet i [Lovable-editorn](https://lovable.dev/projects/fa35fb7e-de9d-4075-bae3-4b95c7719689).
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+- Ändringar i Lovable synkas till detta repository.
+- Ändringar som pushas till `main` synkas tillbaka till Lovable.
+- Behåll repositoryts namn och plats oförändrade så att synkningen fortsätter fungera.
 
-## Development
+## Lokal utveckling
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+Du behöver Node.js och npm.
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+git clone <repository-url>
+cd pixel-perfect-canvas-227
+npm install
 npm run dev
 ```
