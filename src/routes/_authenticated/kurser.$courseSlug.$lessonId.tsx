@@ -322,7 +322,9 @@ function SectionCard({ section }: { section: LessonSection }) {
 
 interface QuestionState {
   selectedId?: string;
-  result?: SubmitAnswerResult;
+  meta?: SubmitAnswerResult;
+  solved?: boolean;
+  wrongIds?: string[];
   submitting?: boolean;
   error?: string;
 }
@@ -331,40 +333,78 @@ function QuizBlock({ quiz, final }: { quiz: LessonQuiz; final?: boolean }) {
   const [state, setState] = useState<Record<string, QuestionState>>({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const questions = quiz.questions;
-  const answeredCount = useMemo(() => Object.values(state).filter((s) => s.result).length, [state]);
+  const answeredCount = useMemo(() => Object.values(state).filter((s) => s.solved).length, [state]);
   if (questions.length === 0) return null;
 
   const allAnswered = answeredCount === questions.length;
   const q = questions[currentIndex];
   const s = q ? state[q.id] ?? {} : {};
-  const locked = !!s.result;
+  const locked = !!s.solved;
+  const wrongIds = s.wrongIds ?? [];
+
+  async function onSubmit() {
+    if (!q || !s.selectedId) return;
+    const questionId = q.id;
+    const picked = s.selectedId;
+    setState((prev) => ({ ...prev, [questionId]: { ...prev[questionId], submitting: true, error: undefined } }));
+    try {
+      let meta = s.meta;
+      if (!meta) {
+        meta = await submitQuizAnswer(questionId, picked);
+      }
+      const isCorrect = meta.correct_answer_id
+        ? picked === meta.correct_answer_id
+        : meta.is_correct;
+      setState((prev) => {
+        const cur = prev[questionId] ?? {};
+        return {
+          ...prev,
+          [questionId]: {
+            ...cur,
+            submitting: false,
+            meta,
+            solved: isCorrect,
+            selectedId: isCorrect ? picked : undefined,
+            wrongIds: isCorrect
+              ? cur.wrongIds ?? []
+              : Array.from(new Set([...(cur.wrongIds ?? []), picked])),
+          },
+        };
+      });
+    } catch (e) {
+      setState((prev) => ({
+        ...prev,
+        [questionId]: { ...prev[questionId], submitting: false, error: e instanceof Error ? e.message : "Fel" },
+      }));
+    }
+  }
 
   return (
     <Card className="border-primary/20 bg-primary/5">
       <CardContent className="p-6 sm:p-8">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-semibold">{final || quiz.type === "lesson_final" ? "Lektionsquiz" : "Snabbquiz"}</h3>
-          <span className="text-xs font-medium text-muted-foreground">{answeredCount} / {questions.length} besvarade</span>
+          <span className="text-xs font-medium text-muted-foreground">{answeredCount} / {questions.length} rätt</span>
         </div>
 
         {allAnswered ? (
           <div className="rounded-xl bg-card p-5">
             <p className="text-sm font-semibold">Quiz slutfört!</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Du har svarat på alla {questions.length} frågor.
+              Du har klarat alla {questions.length} frågor.
             </p>
             <div className="mt-4 space-y-3">
               {questions.map((question, idx) => {
-                const qs = state[question.id]?.result;
-                const explanation = qs?.explanation ?? question.explanation;
+                const qs = state[question.id];
+                const explanation = qs?.meta?.explanation ?? question.explanation;
                 return (
                   <div key={question.id} className="flex items-start gap-2 text-sm">
-                    {qs?.is_correct ? <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" /> : <XCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />}
+                    {qs?.solved ? <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" /> : <XCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />}
                     <div className="flex-1">
                       <p>{idx + 1}. {question.question}</p>
-                      {qs?.correct_answer ? (
+                      {qs?.meta?.correct_answer ? (
                         <p className="mt-0.5 text-muted-foreground">
-                          <span className="font-medium text-foreground">Rätt svar:</span> {qs.correct_answer}
+                          <span className="font-medium text-foreground">Rätt svar:</span> {qs.meta.correct_answer}
                         </p>
                       ) : null}
                       {explanation ? <p className="mt-0.5 text-muted-foreground">{explanation}</p> : null}
@@ -384,17 +424,17 @@ function QuizBlock({ quiz, final }: { quiz: LessonQuiz; final?: boolean }) {
             <div className="mt-3 grid gap-2">
               {q.answers.map((a) => {
                 const selected = s.selectedId === a.id;
-                const isCorrect = s.result && s.result.correct_answer_id === a.id;
-                const isWrongPick = s.result && selected && !s.result.is_correct;
+                const isCorrect = locked && s.meta?.correct_answer_id === a.id;
+                const isWrongPick = wrongIds.includes(a.id);
                 return (
                   <label
                     key={a.id}
                     className={[
                       "flex cursor-pointer items-start gap-3 rounded-lg border p-3 text-sm transition-colors",
-                      locked ? "cursor-default" : "hover:bg-muted/60",
+                      locked || isWrongPick ? "cursor-default" : "hover:bg-muted/60",
                       selected && !locked ? "border-primary bg-primary/5" : "border-border/60",
-                      locked && isCorrect ? "border-emerald-500/60 bg-emerald-500/10" : "",
-                      locked && isWrongPick ? "border-destructive/60 bg-destructive/10" : "",
+                      isCorrect ? "border-emerald-500/60 bg-emerald-500/10" : "",
+                      isWrongPick ? "border-destructive/50 bg-destructive/10 opacity-70" : "",
                     ].join(" ")}
                   >
                     <input
@@ -402,45 +442,24 @@ function QuizBlock({ quiz, final }: { quiz: LessonQuiz; final?: boolean }) {
                       name={`q-${q.id}`}
                       className="mt-0.5"
                       checked={selected}
-                      disabled={locked}
+                      disabled={locked || isWrongPick}
                       onChange={() => setState((prev) => ({ ...prev, [q.id]: { ...prev[q.id], selectedId: a.id } }))}
                     />
                     <span className="flex-1">{a.answer}</span>
-                    {locked && isCorrect ? <CheckCircle2 className="h-4 w-4 text-emerald-600" /> : null}
-                    {locked && isWrongPick ? <XCircle className="h-4 w-4 text-destructive" /> : null}
+                    {isCorrect ? <CheckCircle2 className="h-4 w-4 text-emerald-600" /> : null}
+                    {isWrongPick ? <XCircle className="h-4 w-4 text-destructive" /> : null}
                   </label>
                 );
               })}
             </div>
-            {s.result ? (
+            {locked ? (
               <div className="mt-4 space-y-3">
-                <div
-                  className={[
-                    "rounded-lg border p-3 text-sm",
-                    s.result.is_correct
-                      ? "border-emerald-500/40 bg-emerald-500/10"
-                      : "border-destructive/40 bg-destructive/10",
-                  ].join(" ")}
-                >
-                  <p className="font-semibold">{s.result.is_correct ? "Rätt svar!" : "Inte riktigt."}</p>
-                  {s.result.correct_answer ? (
-                    <p className="mt-1">
-                      <span className="font-medium">Rätt svar:</span> {s.result.correct_answer}
-                    </p>
-                  ) : (
-                    (() => {
-                      const correct = q.answers.find((a) => a.id === s.result?.correct_answer_id);
-                      return correct ? (
-                        <p className="mt-1">
-                          <span className="font-medium">Rätt svar:</span> {correct.answer}
-                        </p>
-                      ) : null;
-                    })()
-                  )}
-                  {s.result.explanation ?? q.explanation ? (
+                <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 p-3 text-sm">
+                  <p className="font-semibold">Rätt svar!</p>
+                  {s.meta?.explanation ?? q.explanation ? (
                     <p className="mt-2 text-muted-foreground">
                       <span className="font-medium text-foreground">Varför:</span>{" "}
-                      {s.result.explanation ?? q.explanation}
+                      {s.meta?.explanation ?? q.explanation}
                     </p>
                   ) : null}
                 </div>
@@ -455,25 +474,22 @@ function QuizBlock({ quiz, final }: { quiz: LessonQuiz; final?: boolean }) {
                 )}
               </div>
             ) : (
-              <div className="mt-3 flex items-center gap-3">
-                <Button
-                  size="sm"
-                  disabled={!s.selectedId || s.submitting}
-                  onClick={async () => {
-                    if (!s.selectedId) return;
-                    setState((prev) => ({ ...prev, [q.id]: { ...prev[q.id], submitting: true, error: undefined } }));
-                    try {
-                      const result = await submitQuizAnswer(q.id, s.selectedId);
-                      setState((prev) => ({ ...prev, [q.id]: { ...prev[q.id], submitting: false, result } }));
-                    } catch (e) {
-                      setState((prev) => ({ ...prev, [q.id]: { ...prev[q.id], submitting: false, error: e instanceof Error ? e.message : "Fel" } }));
-                    }
-                  }}
-                >
-                  {s.submitting ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}
-                  Svara
-                </Button>
-                {s.error ? <span className="text-xs text-destructive">{s.error}</span> : null}
+              <div className="mt-3 space-y-3">
+                {wrongIds.length > 0 ? (
+                  <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm">
+                    <p className="font-semibold">Inte riktigt — försök igen.</p>
+                    <p className="mt-1 text-muted-foreground">
+                      Välj ett annat alternativ och svara på nytt.
+                    </p>
+                  </div>
+                ) : null}
+                <div className="flex items-center gap-3">
+                  <Button size="sm" disabled={!s.selectedId || s.submitting} onClick={onSubmit}>
+                    {s.submitting ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}
+                    {wrongIds.length > 0 ? "Försök igen" : "Svara"}
+                  </Button>
+                  {s.error ? <span className="text-xs text-destructive">{s.error}</span> : null}
+                </div>
               </div>
             )}
           </div>
