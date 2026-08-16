@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight, CheckCircle2, XCircle, Loader2, Calculator, BookMarked, ExternalLink } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
@@ -40,6 +40,10 @@ function LessonPage() {
   const { courseSlug, lessonId } = Route.useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [stepIndex, setStepIndex] = useState(0);
+  useEffect(() => {
+    setStepIndex(0);
+  }, [lessonId]);
 
   const lessonQ = useQuery({
     queryKey: ["lesson", lessonId],
