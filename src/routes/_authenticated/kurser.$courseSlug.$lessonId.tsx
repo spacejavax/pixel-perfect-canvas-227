@@ -488,14 +488,8 @@ function QuizBlock({ quiz, final }: { quiz: LessonQuiz; final?: boolean }) {
                   ].join(" ")}
                 >
                   <p className="font-semibold">
-                    {s.solved ? "Rätt svar!" : "Inte riktigt — här är rätt svar."}
+                    {s.solved ? "Rätt svar!" : "Inte riktigt — rätt svar är markerat."}
                   </p>
-                  {!s.solved && s.meta?.correct_answer_id ? (
-                    <p className="mt-1">
-                      <span className="font-medium">Rätt svar:</span>{" "}
-                      {q.answers.find((a) => a.id === s.meta?.correct_answer_id)?.answer ?? s.meta?.correct_answer}
-                    </p>
-                  ) : null}
                   {s.meta?.explanation ?? q.explanation ? (
                     <p className="mt-2 text-muted-foreground">
                       <span className="font-medium text-foreground">Varför:</span>{" "}
