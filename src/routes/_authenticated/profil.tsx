@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
+import { CertificatesSection } from "@/components/progress/CertificatesSection";
 
 type ProfileRow = Database["public"]["Tables"]["user_profiles"]["Row"];
 
