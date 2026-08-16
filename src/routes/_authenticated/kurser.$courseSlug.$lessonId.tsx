@@ -333,14 +333,19 @@ function QuizBlock({ quiz, final }: { quiz: LessonQuiz; final?: boolean }) {
   const [state, setState] = useState<Record<string, QuestionState>>({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const questions = quiz.questions;
-  const answeredCount = useMemo(() => Object.values(state).filter((s) => s.solved).length, [state]);
+  const correctCount = useMemo(() => Object.values(state).filter((st) => st.solved).length, [state]);
+  const doneCount = useMemo(
+    () => Object.values(state).filter((st) => st.solved || (st.wrongIds?.length ?? 0) >= 2).length,
+    [state],
+  );
   if (questions.length === 0) return null;
 
-  const allAnswered = answeredCount === questions.length;
+  const allAnswered = doneCount === questions.length;
   const q = questions[currentIndex];
   const s = q ? state[q.id] ?? {} : {};
-  const locked = !!s.solved;
   const wrongIds = s.wrongIds ?? [];
+  const revealed = !!s.solved || wrongIds.length >= 2;
+  const locked = revealed;
 
   async function onSubmit() {
     if (!q || !s.selectedId) return;
@@ -384,14 +389,14 @@ function QuizBlock({ quiz, final }: { quiz: LessonQuiz; final?: boolean }) {
       <CardContent className="p-6 sm:p-8">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-semibold">{final || quiz.type === "lesson_final" ? "Lektionsquiz" : "Snabbquiz"}</h3>
-          <span className="text-xs font-medium text-muted-foreground">{answeredCount} / {questions.length} rätt</span>
+          <span className="text-xs font-medium text-muted-foreground">{correctCount} / {questions.length} rätt</span>
         </div>
 
         {allAnswered ? (
           <div className="rounded-xl bg-card p-5">
             <p className="text-sm font-semibold">Quiz slutfört!</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Du har klarat alla {questions.length} frågor.
+              Du hade {correctCount} av {questions.length} rätt.
             </p>
             <div className="mt-4 space-y-3">
               {questions.map((question, idx) => {
