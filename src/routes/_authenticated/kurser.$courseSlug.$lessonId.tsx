@@ -85,25 +85,17 @@ function LessonPage() {
   if (!lesson) throw notFound();
   if (lesson.course.slug !== courseSlug) throw notFound();
 
-  const quizBySection = new Map<string, LessonQuiz>();
-  const finalQuizzes: LessonQuiz[] = [];
-  for (const q of lesson.quizzes) {
-    if (q.section_id) quizBySection.set(q.section_id, q);
-    else finalQuizzes.push(q);
-  }
-  const interactionsBySection = new Map<string, LessonInteraction[]>();
-  const trailingInteractions: LessonInteraction[] = [];
-  for (const it of lesson.interactions) {
-    if (it.after_section_id) {
-      const list = interactionsBySection.get(it.after_section_id) ?? [];
-      list.push(it);
-      interactionsBySection.set(it.after_section_id, list);
-    } else {
-      trailingInteractions.push(it);
-    }
-  }
-
+  const steps = buildSteps(lesson);
   const isCompleted = progressQ.data?.completed === true;
+  const totalSteps = steps.length;
+  const safeStep = Math.min(stepIndex, Math.max(totalSteps - 1, 0));
+  const step = steps[safeStep];
+  const atEnd = safeStep >= totalSteps - 1;
+
+  function goTo(i: number) {
+    setStepIndex(Math.max(0, Math.min(i, totalSteps - 1)));
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
   return (
     <SiteShell>
@@ -128,41 +120,84 @@ function LessonPage() {
           ) : null}
         </header>
 
-        <div className="mt-10 max-w-3xl space-y-8">
-          {lesson.sections.map((section) => (
-            <div key={section.id} className="space-y-6">
-              <SectionCard section={section} />
-              {quizBySection.get(section.id) ? <QuizBlock quiz={quizBySection.get(section.id)!} /> : null}
-              {(interactionsBySection.get(section.id) ?? []).map((it) => (
-                <InteractionBlock key={it.id} interaction={it} userId={user?.id} />
-              ))}
+        {totalSteps > 0 ? (
+          <div className="mt-8 grid gap-8 lg:grid-cols-[240px_minmax(0,1fr)]">
+            <aside className="lg:sticky lg:top-24 lg:self-start">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Moment {safeStep + 1} av {totalSteps}
+              </p>
+              <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full rounded-full bg-primary transition-all"
+                  style={{ width: `${((safeStep + 1) / totalSteps) * 100}%` }}
+                />
+              </div>
+              <ol className="mt-5 space-y-1">
+                {steps.map((st, i) => (
+                  <li key={st.key}>
+                    <button
+                      type="button"
+                      onClick={() => goTo(i)}
+                      className={[
+                        "flex w-full items-start gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm transition-colors",
+                        i === safeStep ? "bg-primary/10 font-semibold text-primary" : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+                      ].join(" ")}
+                    >
+                      <span
+                        className={[
+                          "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[11px] font-semibold",
+                          i === safeStep ? "border-primary bg-primary text-primary-foreground" : i < safeStep ? "border-primary/40 text-primary" : "border-border text-muted-foreground",
+                        ].join(" ")}
+                      >
+                        {i + 1}
+                      </span>
+                      <span className="leading-snug">{st.label}</span>
+                    </button>
+                  </li>
+                ))}
+              </ol>
+            </aside>
+
+            <div className="max-w-3xl space-y-6">
+              {step?.kind === "section" ? (
+                <>
+                  <SectionCard section={step.section} />
+                  {step.quiz ? <QuizBlock key={step.quiz.id} quiz={step.quiz} /> : null}
+                  {step.interactions.map((it) => (
+                    <InteractionBlock key={it.id} interaction={it} userId={user?.id} />
+                  ))}
+                </>
+              ) : null}
+
+              {step?.kind === "interaction" ? (
+                <InteractionBlock key={step.interaction.id} interaction={step.interaction} userId={user?.id} />
+              ) : null}
+
+              {step?.kind === "quiz" ? <QuizBlock key={step.quiz.id} quiz={step.quiz} final /> : null}
+
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/60 pt-6">
+                <Button variant="outline" disabled={safeStep === 0} onClick={() => goTo(safeStep - 1)}>
+                  <ArrowLeft className="mr-1 h-4 w-4" /> Föregående
+                </Button>
+                {atEnd ? (
+                  <Button variant="outline" onClick={() => navigate({ to: "/kurser/$courseSlug", params: { courseSlug: lesson.course.slug } })}>
+                    Till kursen
+                  </Button>
+                ) : (
+                  <Button onClick={() => goTo(safeStep + 1)}>
+                    Nästa moment <ArrowRight className="ml-1 h-4 w-4" />
+                  </Button>
+                )}
+              </div>
             </div>
-          ))}
-
-          {trailingInteractions.map((it) => (
-            <InteractionBlock key={it.id} interaction={it} userId={user?.id} />
-          ))}
-
-          {finalQuizzes.map((q) => <QuizBlock key={q.id} quiz={q} final />)}
-        </div>
-
-        <div className="mt-12 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border/60 bg-card p-6">
-          <div>
-            <h3 className="text-lg font-semibold">{isCompleted ? "Bra jobbat!" : "Klar med lektionen?"}</h3>
-            <p className="text-sm text-muted-foreground">
-              {isCompleted
-                ? "Du har slutfört den här lektionen."
-                : "Din progress uppdateras automatiskt när du svarar på frågor och övningar."}
-            </p>
           </div>
-          <div className="flex gap-3">
-            <Button variant="outline" onClick={() => navigate({ to: "/kurser/$courseSlug", params: { courseSlug: lesson.course.slug } })}>
-              Till kursen
-            </Button>
+        ) : (
+          <div className="mt-10 max-w-3xl">
+            <EmptyState title="Inget innehåll ännu" description="Den här lektionen har inget publicerat innehåll." />
           </div>
-        </div>
+        )}
 
-        {navQ.data && (navQ.data.prev || navQ.data.next) ? (
+        {atEnd && navQ.data && (navQ.data.prev || navQ.data.next) ? (
           <div className="mt-6 flex flex-wrap items-stretch justify-between gap-3">
             {navQ.data.prev ? (
               <Link
