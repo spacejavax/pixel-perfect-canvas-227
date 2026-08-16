@@ -14,6 +14,100 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievement_definitions: {
+        Row: {
+          code: string
+          course_id: string | null
+          created_at: string
+          criteria: Json
+          description: string
+          id: string
+          is_active: boolean
+          kind: string
+          name: string
+          order_number: number
+          xp_bonus: number
+        }
+        Insert: {
+          code: string
+          course_id?: string | null
+          created_at?: string
+          criteria?: Json
+          description: string
+          id?: string
+          is_active?: boolean
+          kind?: string
+          name: string
+          order_number: number
+          xp_bonus?: number
+        }
+        Update: {
+          code?: string
+          course_id?: string | null
+          created_at?: string
+          criteria?: Json
+          description?: string
+          id?: string
+          is_active?: boolean
+          kind?: string
+          name?: string
+          order_number?: number
+          xp_bonus?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "achievement_definitions_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: true
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_certificates: {
+        Row: {
+          certificate_number: string
+          course_id: string
+          display_name: string
+          final_score: number | null
+          id: string
+          is_public: boolean
+          issued_at: string
+          public_id: string
+          user_id: string
+        }
+        Insert: {
+          certificate_number: string
+          course_id: string
+          display_name: string
+          final_score?: number | null
+          id?: string
+          is_public?: boolean
+          issued_at?: string
+          public_id?: string
+          user_id: string
+        }
+        Update: {
+          certificate_number?: string
+          course_id?: string
+          display_name?: string
+          final_score?: number | null
+          id?: string
+          is_public?: boolean
+          issued_at?: string
+          public_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_certificates_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       course_sources: {
         Row: {
           course_id: string
@@ -82,6 +176,39 @@ export type Database = {
           slug?: string
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      learning_activity_events: {
+        Row: {
+          activity_date: string
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json
+          source_id: string
+          user_id: string
+          xp_awarded: number
+        }
+        Insert: {
+          activity_date?: string
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json
+          source_id: string
+          user_id: string
+          xp_awarded: number
+        }
+        Update: {
+          activity_date?: string
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json
+          source_id?: string
+          user_id?: string
+          xp_awarded?: number
         }
         Relationships: []
       }
@@ -304,6 +431,42 @@ export type Database = {
           },
         ]
       }
+      lesson_skill_mappings: {
+        Row: {
+          created_at: string
+          lesson_id: string
+          skill_id: string
+          weight: number
+        }
+        Insert: {
+          created_at?: string
+          lesson_id: string
+          skill_id: string
+          weight?: number
+        }
+        Update: {
+          created_at?: string
+          lesson_id?: string
+          skill_id?: string
+          weight?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_skill_mappings_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_skill_mappings_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skill_definitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lesson_sources: {
         Row: {
           created_at: string
@@ -386,6 +549,172 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      money_lab_saved_scenarios: {
+        Row: {
+          created_at: string
+          id: string
+          input_data: Json
+          result_data: Json
+          title: string
+          tool_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          input_data?: Json
+          result_data?: Json
+          title: string
+          tool_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          input_data?: Json
+          result_data?: Json
+          title?: string
+          tool_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "money_lab_saved_scenarios_tool_id_fkey"
+            columns: ["tool_id"]
+            isOneToOne: false
+            referencedRelation: "money_lab_tools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      money_lab_tools: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          is_active: boolean
+          name: string
+          order_number: number
+          skill_slug: string
+          slug: string
+          updated_at: string
+          xp_reward: number
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          is_active?: boolean
+          name: string
+          order_number: number
+          skill_slug: string
+          slug: string
+          updated_at?: string
+          xp_reward?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          order_number?: number
+          skill_slug?: string
+          slug?: string
+          updated_at?: string
+          xp_reward?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "money_lab_tools_skill_slug_fkey"
+            columns: ["skill_slug"]
+            isOneToOne: false
+            referencedRelation: "skill_definitions"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      shareable_result_cards: {
+        Row: {
+          card_type: string
+          created_at: string
+          id: string
+          is_public: boolean
+          payload: Json
+          public_id: string
+          result_label: string | null
+          result_value: string | null
+          subtitle: string | null
+          theme: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          card_type: string
+          created_at?: string
+          id?: string
+          is_public?: boolean
+          payload?: Json
+          public_id?: string
+          result_label?: string | null
+          result_value?: string | null
+          subtitle?: string | null
+          theme?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          card_type?: string
+          created_at?: string
+          id?: string
+          is_public?: boolean
+          payload?: Json
+          public_id?: string
+          result_label?: string | null
+          result_value?: string | null
+          subtitle?: string | null
+          theme?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      skill_definitions: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          name: string
+          order_number: number
+          slug: string
+          target_points: number
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          name: string
+          order_number: number
+          slug: string
+          target_points?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+          order_number?: number
+          slug?: string
+          target_points?: number
+        }
+        Relationships: []
       }
       sources: {
         Row: {
@@ -523,6 +852,74 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          earned_at: string
+          metadata: Json
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          earned_at?: string
+          metadata?: Json
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          earned_at?: string
+          metadata?: Json
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievement_definitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_learning_stats: {
+        Row: {
+          courses_completed: number
+          current_streak: number
+          labs_completed: number
+          last_activity_date: string | null
+          lessons_completed: number
+          longest_streak: number
+          quiz_questions_answered: number
+          total_xp: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          courses_completed?: number
+          current_streak?: number
+          labs_completed?: number
+          last_activity_date?: string | null
+          lessons_completed?: number
+          longest_streak?: number
+          quiz_questions_answered?: number
+          total_xp?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          courses_completed?: number
+          current_streak?: number
+          labs_completed?: number
+          last_activity_date?: string | null
+          lessons_completed?: number
+          longest_streak?: number
+          quiz_questions_answered?: number
+          total_xp?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_lesson_interaction_responses: {
         Row: {
@@ -701,6 +1098,38 @@ export type Database = {
           },
         ]
       }
+      user_skill_progress: {
+        Row: {
+          last_earned_at: string | null
+          points: number
+          skill_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          last_earned_at?: string | null
+          points?: number
+          skill_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          last_earned_at?: string | null
+          points?: number
+          skill_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_skill_progress_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skill_definitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       lesson_quiz_answer_options: {
@@ -734,6 +1163,7 @@ export type Database = {
       }
     }
     Functions: {
+      complete_money_lab: { Args: { p_tool_slug: string }; Returns: Json }
       get_lesson_quiz_result: {
         Args: { p_quiz_id: string }
         Returns: {
@@ -749,6 +1179,32 @@ export type Database = {
           remediation_questions: number
           score: number
           total_questions: number
+        }[]
+      }
+      get_my_learning_dashboard: { Args: never; Returns: Json }
+      get_public_certificate: {
+        Args: { p_public_id: string }
+        Returns: {
+          certificate_number: string
+          course_title: string
+          display_name: string
+          final_score: number
+          issued_at: string
+          public_id: string
+        }[]
+      }
+      get_public_result_card: {
+        Args: { p_public_id: string }
+        Returns: {
+          card_type: string
+          created_at: string
+          payload: Json
+          public_id: string
+          result_label: string
+          result_value: string
+          subtitle: string
+          theme: string
+          title: string
         }[]
       }
       submit_lesson_interaction_response: {
