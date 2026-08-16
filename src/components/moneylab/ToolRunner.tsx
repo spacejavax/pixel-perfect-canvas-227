@@ -129,7 +129,11 @@ export function ToolRunner({
             inputData={raw}
             resultData={
               result
-                ? { headline_label: result.headlineLabel, headline_value: result.headlineValue, rows: result.rows }
+                ? {
+                    headline_label: result.headlineLabel,
+                    headline_value: result.headlineValue,
+                    rows: result.rows.map((row) => ({ label: row.label, value: row.value })),
+                  }
                 : {}
             }
             disabled={!result}
@@ -142,7 +146,11 @@ export function ToolRunner({
               subtitle: "Beräknat i Pongi Money Lab",
               resultLabel: result?.headlineLabel ?? null,
               resultValue: result?.headlineValue ?? null,
-              payload: { tool_slug: spec.slug, inputs: raw, rows: result?.rows ?? [] },
+              payload: {
+                tool_slug: spec.slug,
+                inputs: raw,
+                rows: (result?.rows ?? []).map((row) => ({ label: row.label, value: row.value })),
+              },
             }}
           />
         </div>
