@@ -356,10 +356,19 @@ function QuizBlock({ quiz, final }: { quiz: LessonQuiz; final?: boolean }) {
             <div className="mt-4 space-y-3">
               {questions.map((question, idx) => {
                 const qs = state[question.id]?.result;
+                const explanation = qs?.explanation ?? question.explanation;
                 return (
                   <div key={question.id} className="flex items-start gap-2 text-sm">
                     {qs?.is_correct ? <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" /> : <XCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />}
-                    <span>{idx + 1}. {question.question}</span>
+                    <div className="flex-1">
+                      <p>{idx + 1}. {question.question}</p>
+                      {qs?.correct_answer ? (
+                        <p className="mt-0.5 text-muted-foreground">
+                          <span className="font-medium text-foreground">Rätt svar:</span> {qs.correct_answer}
+                        </p>
+                      ) : null}
+                      {explanation ? <p className="mt-0.5 text-muted-foreground">{explanation}</p> : null}
+                    </div>
                   </div>
                 );
               })}
@@ -405,12 +414,35 @@ function QuizBlock({ quiz, final }: { quiz: LessonQuiz; final?: boolean }) {
             </div>
             {s.result ? (
               <div className="mt-4 space-y-3">
-                <div className="rounded-lg bg-muted/60 p-3 text-sm">
-                  <p className="font-semibold">{s.result.is_correct ? "Rätt!" : "Inte riktigt."}</p>
-                  {!s.result.is_correct && s.result.correct_answer ? (
-                    <p className="mt-1"><span className="font-medium">Rätt svar:</span> {s.result.correct_answer}</p>
+                <div
+                  className={[
+                    "rounded-lg border p-3 text-sm",
+                    s.result.is_correct
+                      ? "border-emerald-500/40 bg-emerald-500/10"
+                      : "border-destructive/40 bg-destructive/10",
+                  ].join(" ")}
+                >
+                  <p className="font-semibold">{s.result.is_correct ? "Rätt svar!" : "Inte riktigt."}</p>
+                  {s.result.correct_answer ? (
+                    <p className="mt-1">
+                      <span className="font-medium">Rätt svar:</span> {s.result.correct_answer}
+                    </p>
+                  ) : (
+                    (() => {
+                      const correct = q.answers.find((a) => a.id === s.result?.correct_answer_id);
+                      return correct ? (
+                        <p className="mt-1">
+                          <span className="font-medium">Rätt svar:</span> {correct.answer}
+                        </p>
+                      ) : null;
+                    })()
+                  )}
+                  {s.result.explanation ?? q.explanation ? (
+                    <p className="mt-2 text-muted-foreground">
+                      <span className="font-medium text-foreground">Varför:</span>{" "}
+                      {s.result.explanation ?? q.explanation}
+                    </p>
                   ) : null}
-                  {s.result.explanation ? <p className="mt-1 text-muted-foreground">{s.result.explanation}</p> : null}
                 </div>
                 {currentIndex < questions.length - 1 ? (
                   <Button size="sm" onClick={() => setCurrentIndex((i) => i + 1)}>
