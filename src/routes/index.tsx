@@ -50,7 +50,7 @@ function LandingPage() {
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Button asChild size="lg">
-                <Link to="/skapa-konto">Kom igång gratis</Link>
+                <Link to="/kom-igang">Kom igång gratis</Link>
               </Button>
               <Button asChild size="lg" variant="outline">
                 <Link to="/kurser">Utforska kurser</Link>
@@ -139,7 +139,7 @@ function LandingPage() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg">
-                <Link to="/skapa-konto">Skapa ett konto</Link>
+                <Link to="/kom-igang">Skapa ett konto</Link>
               </Button>
               <Button asChild size="lg" variant="outline">
                 <Link to="/kurser">Utforska kurser</Link>

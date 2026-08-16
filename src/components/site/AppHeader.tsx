@@ -74,7 +74,7 @@ export function AppHeader() {
                 <Link to="/logga-in">Logga in</Link>
               </Button>
               <Button asChild size="sm">
-                <Link to="/skapa-konto">Skapa konto</Link>
+                <Link to="/kom-igang">Skapa konto</Link>
               </Button>
             </>
           )}
@@ -111,7 +111,7 @@ export function AppHeader() {
                         <Link to="/logga-in">Logga in</Link>
                       </Button>
                       <Button asChild onClick={close}>
-                        <Link to="/skapa-konto">Skapa konto</Link>
+                        <Link to="/kom-igang">Skapa konto</Link>
                       </Button>
                     </>
                   )}
