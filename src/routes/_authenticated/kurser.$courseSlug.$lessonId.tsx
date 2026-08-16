@@ -234,6 +234,52 @@ function LessonPage() {
   );
 }
 
+type LessonData = NonNullable<Awaited<ReturnType<typeof fetchLessonById>>>;
+
+type Step =
+  | { kind: "section"; key: string; label: string; section: LessonSection; quiz?: LessonQuiz; interactions: LessonInteraction[] }
+  | { kind: "interaction"; key: string; label: string; interaction: LessonInteraction }
+  | { kind: "quiz"; key: string; label: string; quiz: LessonQuiz };
+
+function buildSteps(lesson: LessonData): Step[] {
+  const quizBySection = new Map<string, LessonQuiz>();
+  const finalQuizzes: LessonQuiz[] = [];
+  for (const q of lesson.quizzes) {
+    if (q.section_id) quizBySection.set(q.section_id, q);
+    else finalQuizzes.push(q);
+  }
+  const interactionsBySection = new Map<string, LessonInteraction[]>();
+  const trailingInteractions: LessonInteraction[] = [];
+  for (const it of lesson.interactions) {
+    if (it.after_section_id) {
+      const list = interactionsBySection.get(it.after_section_id) ?? [];
+      list.push(it);
+      interactionsBySection.set(it.after_section_id, list);
+    } else {
+      trailingInteractions.push(it);
+    }
+  }
+
+  const steps: Step[] = [];
+  for (const section of lesson.sections) {
+    steps.push({
+      kind: "section",
+      key: `section-${section.id}`,
+      label: section.title,
+      section,
+      quiz: quizBySection.get(section.id),
+      interactions: interactionsBySection.get(section.id) ?? [],
+    });
+  }
+  for (const it of trailingInteractions) {
+    steps.push({ kind: "interaction", key: `interaction-${it.id}`, label: it.title, interaction: it });
+  }
+  for (const q of finalQuizzes) {
+    steps.push({ kind: "quiz", key: `quiz-${q.id}`, label: "Lektionsquiz", quiz: q });
+  }
+  return steps;
+}
+
 function SectionCard({ section }: { section: LessonSection }) {
   const [showSources, setShowSources] = useState(false);
   const hasSources = (section.sources ?? []).length > 0;
