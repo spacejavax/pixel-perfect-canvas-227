@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import logoAsset from "@/assets/pongi-logo.png.asset.json";
+
 
 export function Logo({ to = "/" }: { to?: string }) {
   return (
@@ -9,7 +9,7 @@ export function Logo({ to = "/" }: { to?: string }) {
       aria-label="Pongi startsida"
     >
       <img
-        src={logoAsset.url}
+        src="/pongi-logo.png"
         alt=""
         aria-hidden
         className="h-9 w-9 rounded-xl"

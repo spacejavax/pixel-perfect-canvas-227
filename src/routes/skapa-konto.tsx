@@ -5,7 +5,7 @@ import { SiteShell } from "@/components/site/SiteShell";
 import { PageContainer } from "@/components/site/PageContainer";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import logoAsset from "@/assets/pongi-logo.png.asset.json";
+
 
 export const Route = createFileRoute("/skapa-konto")({
   head: () => ({
@@ -52,7 +52,7 @@ function SignupPage() {
       <PageContainer narrow className="py-14">
         <div className="mx-auto max-w-md rounded-2xl border border-border bg-card p-8 shadow-sm">
           <div className="mb-6 flex items-center gap-3">
-            <img src={logoAsset.url} alt="" aria-hidden className="h-10 w-10 rounded-xl" />
+            <img src="/pongi-logo.png" alt="" aria-hidden className="h-10 w-10 rounded-xl" />
             <div>
               <h1 className="text-xl font-bold tracking-tight">Skapa konto</h1>
               <p className="text-sm text-muted-foreground">Kom igång på under en minut.</p>
