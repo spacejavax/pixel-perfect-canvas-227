@@ -357,9 +357,8 @@ function QuizBlock({ quiz, final }: { quiz: LessonQuiz; final?: boolean }) {
       if (!meta) {
         meta = await submitQuizAnswer(questionId, picked);
       }
-      const isCorrect = meta.correct_answer_id
-        ? picked === meta.correct_answer_id
-        : meta.is_correct;
+      const correctAnswerId = meta.correct_answer_id;
+      const isCorrect = correctAnswerId ? picked === correctAnswerId : meta.is_correct;
       setState((prev) => {
         const cur = prev[questionId] ?? {};
         return {
@@ -369,7 +368,7 @@ function QuizBlock({ quiz, final }: { quiz: LessonQuiz; final?: boolean }) {
             submitting: false,
             meta,
             solved: isCorrect,
-            selectedId: isCorrect ? picked : undefined,
+            selectedId: correctAnswerId ?? (isCorrect ? picked : undefined),
             wrongIds: isCorrect
               ? cur.wrongIds ?? []
               : Array.from(new Set([...(cur.wrongIds ?? []), picked])),
