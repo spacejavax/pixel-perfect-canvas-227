@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SkapaKontoRouteImport } from './routes/skapa-konto'
 import { Route as OmPongiRouteImport } from './routes/om-pongi'
 import { Route as LoggaInRouteImport } from './routes/logga-in'
+import { Route as KomIgangRouteImport } from './routes/kom-igang'
 import { Route as IntegritetRouteImport } from './routes/integritet'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -35,6 +36,11 @@ const OmPongiRoute = OmPongiRouteImport.update({
 const LoggaInRoute = LoggaInRouteImport.update({
   id: '/logga-in',
   path: '/logga-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KomIgangRoute = KomIgangRouteImport.update({
+  id: '/kom-igang',
+  path: '/kom-igang',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IntegritetRoute = IntegritetRouteImport.update({
@@ -86,6 +92,7 @@ const AuthenticatedKurserCourseSlugLessonIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/integritet': typeof IntegritetRoute
+  '/kom-igang': typeof KomIgangRoute
   '/logga-in': typeof LoggaInRoute
   '/om-pongi': typeof OmPongiRoute
   '/skapa-konto': typeof SkapaKontoRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/integritet': typeof IntegritetRoute
+  '/kom-igang': typeof KomIgangRoute
   '/logga-in': typeof LoggaInRoute
   '/om-pongi': typeof OmPongiRoute
   '/skapa-konto': typeof SkapaKontoRoute
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/integritet': typeof IntegritetRoute
+  '/kom-igang': typeof KomIgangRoute
   '/logga-in': typeof LoggaInRoute
   '/om-pongi': typeof OmPongiRoute
   '/skapa-konto': typeof SkapaKontoRoute
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/integritet'
+    | '/kom-igang'
     | '/logga-in'
     | '/om-pongi'
     | '/skapa-konto'
@@ -142,6 +152,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/integritet'
+    | '/kom-igang'
     | '/logga-in'
     | '/om-pongi'
     | '/skapa-konto'
@@ -156,6 +167,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/integritet'
+    | '/kom-igang'
     | '/logga-in'
     | '/om-pongi'
     | '/skapa-konto'
@@ -171,6 +183,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   IntegritetRoute: typeof IntegritetRoute
+  KomIgangRoute: typeof KomIgangRoute
   LoggaInRoute: typeof LoggaInRoute
   OmPongiRoute: typeof OmPongiRoute
   SkapaKontoRoute: typeof SkapaKontoRoute
@@ -199,6 +212,13 @@ declare module '@tanstack/react-router' {
       path: '/logga-in'
       fullPath: '/logga-in'
       preLoaderRoute: typeof LoggaInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kom-igang': {
+      id: '/kom-igang'
+      path: '/kom-igang'
+      fullPath: '/kom-igang'
+      preLoaderRoute: typeof KomIgangRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/integritet': {
@@ -289,6 +309,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   IntegritetRoute: IntegritetRoute,
+  KomIgangRoute: KomIgangRoute,
   LoggaInRoute: LoggaInRoute,
   OmPongiRoute: OmPongiRoute,
   SkapaKontoRoute: SkapaKontoRoute,

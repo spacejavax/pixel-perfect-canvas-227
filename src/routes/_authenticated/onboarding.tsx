@@ -1,11 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteShell } from "@/components/site/SiteShell";
 import { PageContainer } from "@/components/site/PageContainer";
-import { Button } from "@/components/ui/button";
+import { OnboardingQuiz } from "@/components/site/OnboardingQuiz";
 import { toast } from "sonner";
+import {
+  clearPendingOnboarding,
+  fetchOnboarding,
+  persistOnboarding,
+  readPendingOnboarding,
+} from "@/lib/onboarding";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({
@@ -21,186 +26,82 @@ export const Route = createFileRoute("/_authenticated/onboarding")({
   component: OnboardingPage,
 });
 
-type Question = { id: string; question: string; order_number: number; category: string | null };
-type Answer = { id: string; fråga_id: string; svar_text: string; order_number: number; value: string | null };
-
-async function fetchOnboarding() {
-  const [{ data: questions, error: qErr }, { data: answers, error: aErr }] = await Promise.all([
-    supabase.from("steg_1_quiz_om_personen").select("*").order("order_number"),
-    supabase.from("svar_steg_1_quiz_om_personen").select("*").order("order_number"),
-  ]);
-  if (qErr) throw qErr;
-  if (aErr) throw aErr;
-  return { questions: (questions ?? []) as Question[], answers: (answers ?? []) as Answer[] };
-}
-
 function OnboardingPage() {
   const navigate = useNavigate();
-  const { data, isLoading, error } = useQuery({ queryKey: ["onboarding"], queryFn: fetchOnboarding });
-
-  const [step, setStep] = useState(0);
-  const [selected, setSelected] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
-
-  const answersByQ = useMemo(() => {
-    const map: Record<string, Answer[]> = {};
-    for (const a of data?.answers ?? []) {
-      (map[a.fråga_id] ??= []).push(a);
-    }
-    return map;
-  }, [data]);
-
-  const questions = data?.questions ?? [];
-  const current = questions[step];
-  const total = questions.length;
+  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    // If profile already finished onboarding, skip.
+    let active = true;
     (async () => {
-      const { data: userRes } = await supabase.auth.getUser();
-      if (!userRes.user) return;
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("onboarding_completed_at")
-        .eq("id", userRes.user.id)
-        .maybeSingle();
-      if (profile?.onboarding_completed_at) {
-        navigate({ to: "/hem" });
+      try {
+        const { data: userRes } = await supabase.auth.getUser();
+        if (!userRes.user) return;
+
+        const { data: profile } = await supabase
+          .from("user_profiles")
+          .select("onboarding_completed_at")
+          .eq("id", userRes.user.id)
+          .maybeSingle();
+        if (profile?.onboarding_completed_at) {
+          clearPendingOnboarding();
+          navigate({ to: "/hem" });
+          return;
+        }
+
+        // Answers given before sign-in are saved now.
+        const pending = readPendingOnboarding();
+        if (pending) {
+          const data = await fetchOnboarding();
+          await persistOnboarding(pending, data.questions, data.answers);
+          toast.success("Tack! Vi anpassar din upplevelse.");
+          navigate({ to: "/hem" });
+          return;
+        }
+      } catch (err) {
+        clearPendingOnboarding();
+        toast.error(err instanceof Error ? err.message : "Kunde inte spara dina svar.");
+      } finally {
+        if (active) setChecking(false);
       }
     })();
+    return () => {
+      active = false;
+    };
   }, [navigate]);
-
-  async function finish() {
-    setSubmitting(true);
-    try {
-      const { data: userRes } = await supabase.auth.getUser();
-      const uid = userRes.user?.id;
-      if (!uid) throw new Error("Ingen inloggad användare.");
-
-      const rows = Object.entries(selected).map(([question_id, answer_id]) => ({
-        user_id: uid,
-        question_id,
-        answer_id,
-      }));
-      if (rows.length > 0) {
-        const { error: insErr } = await supabase
-          .from("steg1_user_quiz_answers_sparad_data")
-          .upsert(rows, { onConflict: "user_id,question_id" });
-        if (insErr) throw insErr;
-      }
-
-      // Map onboarding answer values into profile summary fields.
-      const profileUpdate: Record<string, string | null> = {
-        onboarding_completed_at: new Date().toISOString(),
-      };
-      const questionById = new Map((data?.questions ?? []).map((q) => [q.id, q]));
-      const answerById = new Map((data?.answers ?? []).map((a) => [a.id, a]));
-      for (const [qid, aid] of Object.entries(selected)) {
-        const q = questionById.get(qid);
-        const a = answerById.get(aid);
-        if (!q || !a) continue;
-        const value = a.value ?? a.svar_text;
-        const cat = (q.category ?? "").toLowerCase();
-        if (cat === "interest" || cat === "topic") profileUpdate.onboarding_topic = value;
-        else if (cat === "age") profileUpdate.onboarding_age_range = value;
-        else if (cat === "situation" || cat === "occupation") profileUpdate.occupation = value;
-      }
-
-      const { error: upErr } = await supabase
-        .from("user_profiles")
-        .upsert({ id: uid, ...profileUpdate }, { onConflict: "id" });
-      if (upErr) throw upErr;
-
-      toast.success("Tack! Vi anpassar din upplevelse.");
-      navigate({ to: "/hem" });
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Kunde inte spara.");
-    } finally {
-      setSubmitting(false);
-    }
-  }
 
   return (
     <SiteShell>
       <PageContainer narrow className="py-12">
         <div className="mx-auto max-w-xl">
           <div className="mb-6">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Kom igång
-            </p>
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">Kom igång</p>
             <h1 className="mt-1 text-3xl font-bold tracking-tight">Berätta lite om dig</h1>
             <p className="mt-2 text-muted-foreground">
               Vi använder svaren för att göra Pongi mer relevant för dig.
             </p>
           </div>
 
-          {isLoading && <p className="text-muted-foreground">Laddar frågor…</p>}
-          {error && (
-            <p className="text-destructive">Kunde inte ladda frågor. Ladda om sidan.</p>
-          )}
-
-          {current && (
-            <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-              <p className="text-xs font-medium text-muted-foreground">
-                Fråga {step + 1} av {total}
-              </p>
-              <h2 className="mt-2 text-xl font-semibold">{current.question}</h2>
-              <div className="mt-5 space-y-2">
-                {(answersByQ[current.id] ?? []).map((a) => {
-                  const isSelected = selected[current.id] === a.id;
-                  return (
-                    <button
-                      key={a.id}
-                      type="button"
-                      onClick={() => setSelected((s) => ({ ...s, [current.id]: a.id }))}
-                      className={`w-full rounded-xl border px-4 py-3 text-left text-sm transition-colors ${
-                        isSelected
-                          ? "border-primary bg-primary/5 text-foreground"
-                          : "border-border bg-background hover:bg-muted"
-                      }`}
-                    >
-                      {a.svar_text}
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="mt-6 flex items-center justify-between">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  disabled={step === 0}
-                  onClick={() => setStep((s) => Math.max(0, s - 1))}
-                >
-                  Tillbaka
-                </Button>
-                {step < total - 1 ? (
-                  <Button
-                    type="button"
-                    disabled={!selected[current.id]}
-                    onClick={() => setStep((s) => s + 1)}
-                  >
-                    Nästa
-                  </Button>
-                ) : (
-                  <Button
-                    type="button"
-                    disabled={!selected[current.id] || submitting}
-                    onClick={finish}
-                  >
-                    {submitting ? "Sparar…" : "Slutför"}
-                  </Button>
-                )}
-              </div>
-            </div>
-          )}
-
-          {!isLoading && !error && questions.length === 0 && (
-            <div className="rounded-2xl border border-border bg-card p-6">
-              <p className="text-muted-foreground">Inga frågor tillgängliga just nu.</p>
-              <Button className="mt-4" onClick={() => navigate({ to: "/hem" })}>
-                Gå vidare
-              </Button>
-            </div>
+          {checking ? (
+            <p className="text-muted-foreground">Laddar…</p>
+          ) : (
+            <OnboardingQuiz
+              submitLabel="Slutför"
+              submitting={submitting}
+              onComplete={async (selected, data) => {
+                setSubmitting(true);
+                try {
+                  await persistOnboarding(selected, data.questions, data.answers);
+                  toast.success("Tack! Vi anpassar din upplevelse.");
+                  navigate({ to: "/hem" });
+                } catch (err) {
+                  toast.error(err instanceof Error ? err.message : "Kunde inte spara.");
+                } finally {
+                  setSubmitting(false);
+                }
+              }}
+              onEmpty={() => navigate({ to: "/hem" })}
+            />
           )}
         </div>
       </PageContainer>
