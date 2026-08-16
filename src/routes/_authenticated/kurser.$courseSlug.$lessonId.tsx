@@ -244,9 +244,15 @@ interface QuestionState {
 
 function QuizBlock({ quiz, final }: { quiz: LessonQuiz; final?: boolean }) {
   const [state, setState] = useState<Record<string, QuestionState>>({});
+  const [currentIndex, setCurrentIndex] = useState(0);
   const questions = quiz.questions;
   const answeredCount = useMemo(() => Object.values(state).filter((s) => s.result).length, [state]);
   if (questions.length === 0) return null;
+
+  const allAnswered = answeredCount === questions.length;
+  const q = questions[currentIndex];
+  const s = q ? state[q.id] ?? {} : {};
+  const locked = !!s.result;
 
   return (
     <Card className="border-primary/20 bg-primary/5">
@@ -255,78 +261,106 @@ function QuizBlock({ quiz, final }: { quiz: LessonQuiz; final?: boolean }) {
           <h3 className="text-lg font-semibold">{final || quiz.type === "lesson_final" ? "Lektionsquiz" : "Snabbquiz"}</h3>
           <span className="text-xs font-medium text-muted-foreground">{answeredCount} / {questions.length} besvarade</span>
         </div>
-        <div className="space-y-6">
-          {questions.map((q, i) => {
-            const s = state[q.id] ?? {};
-            const locked = !!s.result;
-            return (
-              <div key={q.id} className="rounded-xl bg-card p-5">
-                <p className="text-sm font-semibold text-foreground">{i + 1}. {q.question}</p>
-                <div className="mt-3 grid gap-2">
-                  {q.answers.map((a) => {
-                    const selected = s.selectedId === a.id;
-                    const isCorrect = s.result && s.result.correct_answer_id === a.id;
-                    const isWrongPick = s.result && selected && !s.result.is_correct;
-                    return (
-                      <label
-                        key={a.id}
-                        className={[
-                          "flex cursor-pointer items-start gap-3 rounded-lg border p-3 text-sm transition-colors",
-                          locked ? "cursor-default" : "hover:bg-muted/60",
-                          selected && !locked ? "border-primary bg-primary/5" : "border-border/60",
-                          locked && isCorrect ? "border-emerald-500/60 bg-emerald-500/10" : "",
-                          locked && isWrongPick ? "border-destructive/60 bg-destructive/10" : "",
-                        ].join(" ")}
-                      >
-                        <input
-                          type="radio"
-                          name={`q-${q.id}`}
-                          className="mt-0.5"
-                          checked={selected}
-                          disabled={locked}
-                          onChange={() => setState((prev) => ({ ...prev, [q.id]: { ...prev[q.id], selectedId: a.id } }))}
-                        />
-                        <span className="flex-1">{a.answer}</span>
-                        {locked && isCorrect ? <CheckCircle2 className="h-4 w-4 text-emerald-600" /> : null}
-                        {locked && isWrongPick ? <XCircle className="h-4 w-4 text-destructive" /> : null}
-                      </label>
-                    );
-                  })}
+
+        {allAnswered ? (
+          <div className="rounded-xl bg-card p-5">
+            <p className="text-sm font-semibold">Quiz slutfört!</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Du har svarat på alla {questions.length} frågor.
+            </p>
+            <div className="mt-4 space-y-3">
+              {questions.map((question, idx) => {
+                const qs = state[question.id]?.result;
+                return (
+                  <div key={question.id} className="flex items-start gap-2 text-sm">
+                    {qs?.is_correct ? <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" /> : <XCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />}
+                    <span>{idx + 1}. {question.question}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : q ? (
+          <div className="rounded-xl bg-card p-5">
+            <div className="mb-3 flex items-center justify-between">
+              <p className="text-sm font-semibold text-foreground">Fråga {currentIndex + 1} av {questions.length}</p>
+              <span className="text-xs text-muted-foreground">{questions.length - currentIndex} kvar</span>
+            </div>
+            <p className="text-sm font-semibold text-foreground">{q.question}</p>
+            <div className="mt-3 grid gap-2">
+              {q.answers.map((a) => {
+                const selected = s.selectedId === a.id;
+                const isCorrect = s.result && s.result.correct_answer_id === a.id;
+                const isWrongPick = s.result && selected && !s.result.is_correct;
+                return (
+                  <label
+                    key={a.id}
+                    className={[
+                      "flex cursor-pointer items-start gap-3 rounded-lg border p-3 text-sm transition-colors",
+                      locked ? "cursor-default" : "hover:bg-muted/60",
+                      selected && !locked ? "border-primary bg-primary/5" : "border-border/60",
+                      locked && isCorrect ? "border-emerald-500/60 bg-emerald-500/10" : "",
+                      locked && isWrongPick ? "border-destructive/60 bg-destructive/10" : "",
+                    ].join(" ")}
+                  >
+                    <input
+                      type="radio"
+                      name={`q-${q.id}`}
+                      className="mt-0.5"
+                      checked={selected}
+                      disabled={locked}
+                      onChange={() => setState((prev) => ({ ...prev, [q.id]: { ...prev[q.id], selectedId: a.id } }))}
+                    />
+                    <span className="flex-1">{a.answer}</span>
+                    {locked && isCorrect ? <CheckCircle2 className="h-4 w-4 text-emerald-600" /> : null}
+                    {locked && isWrongPick ? <XCircle className="h-4 w-4 text-destructive" /> : null}
+                  </label>
+                );
+              })}
+            </div>
+            {s.result ? (
+              <div className="mt-4 space-y-3">
+                <div className="rounded-lg bg-muted/60 p-3 text-sm">
+                  <p className="font-semibold">{s.result.is_correct ? "Rätt!" : "Inte riktigt."}</p>
+                  {!s.result.is_correct && s.result.correct_answer ? (
+                    <p className="mt-1"><span className="font-medium">Rätt svar:</span> {s.result.correct_answer}</p>
+                  ) : null}
+                  {s.result.explanation ? <p className="mt-1 text-muted-foreground">{s.result.explanation}</p> : null}
                 </div>
-                {s.result ? (
-                  <div className="mt-3 rounded-lg bg-muted/60 p-3 text-sm">
-                    <p className="font-semibold">{s.result.is_correct ? "Rätt!" : "Inte riktigt."}</p>
-                    {!s.result.is_correct && s.result.correct_answer ? (
-                      <p className="mt-1"><span className="font-medium">Rätt svar:</span> {s.result.correct_answer}</p>
-                    ) : null}
-                    {s.result.explanation ? <p className="mt-1 text-muted-foreground">{s.result.explanation}</p> : null}
-                  </div>
+                {currentIndex < questions.length - 1 ? (
+                  <Button size="sm" onClick={() => setCurrentIndex((i) => i + 1)}>
+                    Nästa fråga <ArrowRight className="ml-1 h-4 w-4" />
+                  </Button>
                 ) : (
-                  <div className="mt-3 flex items-center gap-3">
-                    <Button
-                      size="sm"
-                      disabled={!s.selectedId || s.submitting}
-                      onClick={async () => {
-                        if (!s.selectedId) return;
-                        setState((prev) => ({ ...prev, [q.id]: { ...prev[q.id], submitting: true, error: undefined } }));
-                        try {
-                          const result = await submitQuizAnswer(q.id, s.selectedId);
-                          setState((prev) => ({ ...prev, [q.id]: { ...prev[q.id], submitting: false, result } }));
-                        } catch (e) {
-                          setState((prev) => ({ ...prev, [q.id]: { ...prev[q.id], submitting: false, error: e instanceof Error ? e.message : "Fel" } }));
-                        }
-                      }}
-                    >
-                      {s.submitting ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}
-                      Svara
-                    </Button>
-                    {s.error ? <span className="text-xs text-destructive">{s.error}</span> : null}
-                  </div>
+                  <Button size="sm" onClick={() => setCurrentIndex((i) => i + 1)}>
+                    Visa resultat
+                  </Button>
                 )}
               </div>
-            );
-          })}
-        </div>
+            ) : (
+              <div className="mt-3 flex items-center gap-3">
+                <Button
+                  size="sm"
+                  disabled={!s.selectedId || s.submitting}
+                  onClick={async () => {
+                    if (!s.selectedId) return;
+                    setState((prev) => ({ ...prev, [q.id]: { ...prev[q.id], submitting: true, error: undefined } }));
+                    try {
+                      const result = await submitQuizAnswer(q.id, s.selectedId);
+                      setState((prev) => ({ ...prev, [q.id]: { ...prev[q.id], submitting: false, result } }));
+                    } catch (e) {
+                      setState((prev) => ({ ...prev, [q.id]: { ...prev[q.id], submitting: false, error: e instanceof Error ? e.message : "Fel" } }));
+                    }
+                  }}
+                >
+                  {s.submitting ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}
+                  Svara
+                </Button>
+                {s.error ? <span className="text-xs text-destructive">{s.error}</span> : null}
+              </div>
+            )}
+          </div>
+        ) : null}
       </CardContent>
     </Card>
   );
