@@ -19,8 +19,10 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MoneyLabIndexRouteImport } from './routes/money-lab.index'
 import { Route as KurserIndexRouteImport } from './routes/kurser.index'
+import { Route as ResultatPublicIdRouteImport } from './routes/resultat.$publicId'
 import { Route as MoneyLabToolSlugRouteImport } from './routes/money-lab.$toolSlug'
 import { Route as KurserCourseSlugRouteImport } from './routes/kurser.$courseSlug'
+import { Route as CertifikatPublicIdRouteImport } from './routes/certifikat.$publicId'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedHemRouteImport } from './routes/_authenticated/hem'
@@ -75,6 +77,11 @@ const KurserIndexRoute = KurserIndexRouteImport.update({
   path: '/kurser/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResultatPublicIdRoute = ResultatPublicIdRouteImport.update({
+  id: '/resultat/$publicId',
+  path: '/resultat/$publicId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MoneyLabToolSlugRoute = MoneyLabToolSlugRouteImport.update({
   id: '/money-lab/$toolSlug',
   path: '/money-lab/$toolSlug',
@@ -83,6 +90,11 @@ const MoneyLabToolSlugRoute = MoneyLabToolSlugRouteImport.update({
 const KurserCourseSlugRoute = KurserCourseSlugRouteImport.update({
   id: '/kurser/$courseSlug',
   path: '/kurser/$courseSlug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CertifikatPublicIdRoute = CertifikatPublicIdRouteImport.update({
+  id: '/certifikat/$publicId',
+  path: '/certifikat/$publicId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
@@ -118,8 +130,10 @@ export interface FileRoutesByFullPath {
   '/hem': typeof AuthenticatedHemRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/profil': typeof AuthenticatedProfilRoute
+  '/certifikat/$publicId': typeof CertifikatPublicIdRoute
   '/kurser/$courseSlug': typeof KurserCourseSlugRoute
   '/money-lab/$toolSlug': typeof MoneyLabToolSlugRoute
+  '/resultat/$publicId': typeof ResultatPublicIdRoute
   '/kurser/': typeof KurserIndexRoute
   '/money-lab/': typeof MoneyLabIndexRoute
   '/kurser/$courseSlug/$lessonId': typeof AuthenticatedKurserCourseSlugLessonIdRoute
@@ -135,8 +149,10 @@ export interface FileRoutesByTo {
   '/hem': typeof AuthenticatedHemRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/profil': typeof AuthenticatedProfilRoute
+  '/certifikat/$publicId': typeof CertifikatPublicIdRoute
   '/kurser/$courseSlug': typeof KurserCourseSlugRoute
   '/money-lab/$toolSlug': typeof MoneyLabToolSlugRoute
+  '/resultat/$publicId': typeof ResultatPublicIdRoute
   '/kurser': typeof KurserIndexRoute
   '/money-lab': typeof MoneyLabIndexRoute
   '/kurser/$courseSlug/$lessonId': typeof AuthenticatedKurserCourseSlugLessonIdRoute
@@ -154,8 +170,10 @@ export interface FileRoutesById {
   '/_authenticated/hem': typeof AuthenticatedHemRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
+  '/certifikat/$publicId': typeof CertifikatPublicIdRoute
   '/kurser/$courseSlug': typeof KurserCourseSlugRoute
   '/money-lab/$toolSlug': typeof MoneyLabToolSlugRoute
+  '/resultat/$publicId': typeof ResultatPublicIdRoute
   '/kurser/': typeof KurserIndexRoute
   '/money-lab/': typeof MoneyLabIndexRoute
   '/_authenticated/kurser/$courseSlug/$lessonId': typeof AuthenticatedKurserCourseSlugLessonIdRoute
@@ -173,8 +191,10 @@ export interface FileRouteTypes {
     | '/hem'
     | '/onboarding'
     | '/profil'
+    | '/certifikat/$publicId'
     | '/kurser/$courseSlug'
     | '/money-lab/$toolSlug'
+    | '/resultat/$publicId'
     | '/kurser/'
     | '/money-lab/'
     | '/kurser/$courseSlug/$lessonId'
@@ -190,8 +210,10 @@ export interface FileRouteTypes {
     | '/hem'
     | '/onboarding'
     | '/profil'
+    | '/certifikat/$publicId'
     | '/kurser/$courseSlug'
     | '/money-lab/$toolSlug'
+    | '/resultat/$publicId'
     | '/kurser'
     | '/money-lab'
     | '/kurser/$courseSlug/$lessonId'
@@ -208,8 +230,10 @@ export interface FileRouteTypes {
     | '/_authenticated/hem'
     | '/_authenticated/onboarding'
     | '/_authenticated/profil'
+    | '/certifikat/$publicId'
     | '/kurser/$courseSlug'
     | '/money-lab/$toolSlug'
+    | '/resultat/$publicId'
     | '/kurser/'
     | '/money-lab/'
     | '/_authenticated/kurser/$courseSlug/$lessonId'
@@ -224,8 +248,10 @@ export interface RootRouteChildren {
   LoggaInRoute: typeof LoggaInRoute
   OmPongiRoute: typeof OmPongiRoute
   SkapaKontoRoute: typeof SkapaKontoRoute
+  CertifikatPublicIdRoute: typeof CertifikatPublicIdRoute
   KurserCourseSlugRoute: typeof KurserCourseSlugRoute
   MoneyLabToolSlugRoute: typeof MoneyLabToolSlugRoute
+  ResultatPublicIdRoute: typeof ResultatPublicIdRoute
   KurserIndexRoute: typeof KurserIndexRoute
   MoneyLabIndexRoute: typeof MoneyLabIndexRoute
 }
@@ -302,6 +328,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KurserIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/resultat/$publicId': {
+      id: '/resultat/$publicId'
+      path: '/resultat/$publicId'
+      fullPath: '/resultat/$publicId'
+      preLoaderRoute: typeof ResultatPublicIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/money-lab/$toolSlug': {
       id: '/money-lab/$toolSlug'
       path: '/money-lab/$toolSlug'
@@ -314,6 +347,13 @@ declare module '@tanstack/react-router' {
       path: '/kurser/$courseSlug'
       fullPath: '/kurser/$courseSlug'
       preLoaderRoute: typeof KurserCourseSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/certifikat/$publicId': {
+      id: '/certifikat/$publicId'
+      path: '/certifikat/$publicId'
+      fullPath: '/certifikat/$publicId'
+      preLoaderRoute: typeof CertifikatPublicIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/profil': {
@@ -374,8 +414,10 @@ const rootRouteChildren: RootRouteChildren = {
   LoggaInRoute: LoggaInRoute,
   OmPongiRoute: OmPongiRoute,
   SkapaKontoRoute: SkapaKontoRoute,
+  CertifikatPublicIdRoute: CertifikatPublicIdRoute,
   KurserCourseSlugRoute: KurserCourseSlugRoute,
   MoneyLabToolSlugRoute: MoneyLabToolSlugRoute,
+  ResultatPublicIdRoute: ResultatPublicIdRoute,
   KurserIndexRoute: KurserIndexRoute,
   MoneyLabIndexRoute: MoneyLabIndexRoute,
 }
