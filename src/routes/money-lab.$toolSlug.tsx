@@ -16,7 +16,7 @@ export const Route = createFileRoute("/money-lab/$toolSlug")({
   loader: ({ params }) => {
     const spec = getToolSpec(params.toolSlug);
     if (!spec) throw notFound();
-    return { title: spec.name, description: spec.description };
+    return { title: spec.name, description: spec.intro };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
@@ -75,7 +75,7 @@ function ToolPage() {
         <div className="mt-4">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Money Lab</p>
           <h1 className="mt-1 text-3xl font-bold tracking-tight">{tool?.name ?? spec.name}</h1>
-          <p className="mt-3 max-w-2xl text-muted-foreground">{tool?.description ?? spec.description}</p>
+          <p className="mt-3 max-w-2xl text-muted-foreground">{tool?.description ?? spec.intro}</p>
         </div>
 
         <ToolRunner

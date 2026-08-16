@@ -96,11 +96,11 @@ function MoneyLabOverview() {
                   </div>
                   <h2 className="mt-2 text-lg font-semibold">{dbTool?.name ?? spec.name}</h2>
                   <p className="mt-2 flex-1 text-sm text-muted-foreground">
-                    {dbTool?.description ?? spec.description}
+                    {dbTool?.description ?? spec.intro}
                   </p>
                   <div className="mt-5">
                     <Button asChild variant="outline" size="sm" className="w-full">
-                      <Link to="/money-lab/$toolSlug" params={{ toolSlug: spec.slug }}>
+                      <Link to="/money-lab/$toolSlug" params={{ toolSlug: spec.slug }} search={{ scenario: undefined }}>
                         Öppna verktyg <ArrowRight className="ml-1 h-4 w-4" />
                       </Link>
                     </Button>
