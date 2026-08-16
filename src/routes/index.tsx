@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Sparkles, Target, Compass } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { PageContainer } from "@/components/site/PageContainer";
 import { CourseCard } from "@/components/site/CourseCard";
@@ -38,72 +37,51 @@ function LandingPage() {
 
   return (
     <SiteShell>
-      <section className="relative overflow-hidden">
-        <div
-          aria-hidden
-          className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_left,var(--color-primary)/12%,transparent_55%),radial-gradient(ellipse_at_bottom_right,var(--color-accent)/12%,transparent_60%)]"
-        />
-        <PageContainer className="py-20 lg:py-28">
-          <div className="max-w-3xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/60 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              <Sparkles className="h-3.5 w-3.5 text-primary" />
-              Ekonomi för verkliga livet
-            </span>
-            <h1 className="mt-5 text-4xl font-extrabold leading-[1.05] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-              Få koll på pengarna
-              <br />
-              <span className="text-primary">– steg för steg.</span>
+      <section className="border-b border-border">
+        <PageContainer className="py-20 lg:py-24">
+          <div className="max-w-2xl">
+            <p className="text-sm text-muted-foreground">Ekonomi för verkliga livet</p>
+            <h1 className="mt-4 text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl">
+              Få koll på pengarna, steg för steg.
             </h1>
-            <p className="mt-5 max-w-2xl text-lg text-muted-foreground">
+            <p className="mt-5 text-lg text-muted-foreground">
               Korta lektioner, tydliga exempel och praktiska övningar för dig som vill
               förstå privatekonomi på riktigt.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Button asChild size="lg">
-                <Link to="/skapa-konto">
-                  Kom igång gratis
-                  <ArrowRight className="ml-1 h-4 w-4" />
-                </Link>
+                <Link to="/skapa-konto">Kom igång gratis</Link>
               </Button>
               <Button asChild size="lg" variant="outline">
                 <Link to="/kurser">Utforska kurser</Link>
               </Button>
             </div>
-            <p className="mt-4 text-sm text-muted-foreground">
+            <p className="mt-5 text-sm text-muted-foreground">
               Ingen förkunskap behövs.
             </p>
           </div>
         </PageContainer>
       </section>
 
-      <section className="py-16">
+      <section className="border-b border-border py-16">
         <PageContainer>
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-10 md:grid-cols-3">
             {[
               {
-                icon: <Compass className="h-5 w-5" />,
                 title: "Lär dig i din takt",
                 body: "Korta lektioner som är enkla att fortsätta – när det passar dig.",
               },
               {
-                icon: <Target className="h-5 w-5" />,
                 title: "Testa direkt",
                 body: "Quiz och praktiska övningar ger dig feedback och befäster kunskapen.",
               },
               {
-                icon: <Sparkles className="h-5 w-5" />,
                 title: "Följ dina framsteg",
                 body: "Se vad du klarat och fortsätt lätt där du senast slutade.",
               },
             ].map((v) => (
-              <div
-                key={v.title}
-                className="rounded-2xl border border-border/60 bg-card p-6 shadow-sm"
-              >
-                <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                  {v.icon}
-                </div>
-                <h3 className="mt-4 text-lg font-semibold">{v.title}</h3>
+              <div key={v.title} className="border-t border-foreground/20 pt-4">
+                <h3 className="text-base font-semibold">{v.title}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{v.body}</p>
               </div>
             ))}
@@ -115,15 +93,13 @@ function LandingPage() {
         <PageContainer>
           <div className="mb-8 flex items-end justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-bold sm:text-3xl">Populära kurser</h2>
+              <h2 className="text-2xl font-bold">Populära kurser</h2>
               <p className="mt-2 text-sm text-muted-foreground">
                 Börja med grunderna eller hoppa direkt in i det du är nyfiken på.
               </p>
             </div>
             <Button asChild variant="ghost" className="hidden sm:inline-flex">
-              <Link to="/kurser">
-                Se alla kurser <ArrowRight className="ml-1 h-4 w-4" />
-              </Link>
+              <Link to="/kurser">Se alla kurser</Link>
             </Button>
           </div>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -152,25 +128,20 @@ function LandingPage() {
         </PageContainer>
       </section>
 
-      <section className="py-20">
+      <section className="pb-20">
         <PageContainer>
-          <div className="overflow-hidden rounded-3xl border border-border/60 bg-gradient-to-br from-primary to-primary/85 px-8 py-14 text-center text-primary-foreground shadow-lg">
-            <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
+          <div className="rounded-lg border border-border bg-secondary px-8 py-12">
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
               Redo att få bättre koll?
             </h2>
-            <p className="mx-auto mt-3 max-w-lg text-primary-foreground/80">
+            <p className="mt-3 max-w-lg text-muted-foreground">
               Skapa ett konto och kom igång på under en minut.
             </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <Button asChild size="lg" variant="secondary">
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button asChild size="lg">
                 <Link to="/skapa-konto">Skapa ett konto</Link>
               </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
-              >
+              <Button asChild size="lg" variant="outline">
                 <Link to="/kurser">Utforska kurser</Link>
               </Button>
             </div>

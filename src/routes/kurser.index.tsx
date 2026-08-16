@@ -37,7 +37,7 @@ function CoursesIndex() {
     <SiteShell>
       <PageContainer className="py-16">
         <header className="max-w-2xl">
-          <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
+          <h1 className="text-3xl font-bold tracking-tight">
             Kurser
           </h1>
           <p className="mt-3 text-muted-foreground">
