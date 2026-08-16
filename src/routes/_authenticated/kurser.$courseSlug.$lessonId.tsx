@@ -357,9 +357,8 @@ function QuizBlock({ quiz, final }: { quiz: LessonQuiz; final?: boolean }) {
       if (!meta) {
         meta = await submitQuizAnswer(questionId, picked);
       }
-      const isCorrect = meta.correct_answer_id
-        ? picked === meta.correct_answer_id
-        : meta.is_correct;
+      const correctAnswerId = meta.correct_answer_id;
+      const isCorrect = correctAnswerId ? picked === correctAnswerId : meta.is_correct;
       setState((prev) => {
         const cur = prev[questionId] ?? {};
         return {
@@ -369,7 +368,7 @@ function QuizBlock({ quiz, final }: { quiz: LessonQuiz; final?: boolean }) {
             submitting: false,
             meta,
             solved: isCorrect,
-            selectedId: isCorrect ? picked : undefined,
+            selectedId: correctAnswerId ?? (isCorrect ? picked : undefined),
             wrongIds: isCorrect
               ? cur.wrongIds ?? []
               : Array.from(new Set([...(cur.wrongIds ?? []), picked])),
@@ -398,22 +397,43 @@ function QuizBlock({ quiz, final }: { quiz: LessonQuiz; final?: boolean }) {
             <p className="mt-1 text-sm text-muted-foreground">
               Du hade {correctCount} av {questions.length} rätt.
             </p>
-            <div className="mt-4 space-y-3">
+            <div className="mt-4 space-y-4">
               {questions.map((question, idx) => {
                 const qs = state[question.id];
                 const explanation = qs?.meta?.explanation ?? question.explanation;
+                const correctAnswerId = qs?.meta?.correct_answer_id;
                 return (
-                  <div key={question.id} className="flex items-start gap-2 text-sm">
-                    {qs?.solved ? <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" /> : <XCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />}
-                    <div className="flex-1">
-                      <p>{idx + 1}. {question.question}</p>
-                      {qs?.meta?.correct_answer ? (
-                        <p className="mt-0.5 text-muted-foreground">
-                          <span className="font-medium text-foreground">Rätt svar:</span> {qs.meta.correct_answer}
-                        </p>
-                      ) : null}
-                      {explanation ? <p className="mt-0.5 text-muted-foreground">{explanation}</p> : null}
+                  <div key={question.id} className="rounded-lg border border-border/60 p-4 text-sm">
+                    <div className="flex items-start gap-2">
+                      {qs?.solved ? <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" /> : <XCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />}
+                      <p className="font-medium text-foreground">{idx + 1}. {question.question}</p>
                     </div>
+                    <div className="mt-3 grid gap-2">
+                      {question.answers.map((a) => {
+                        const isCorrect = correctAnswerId === a.id;
+                        const isWrongPick = qs?.wrongIds?.includes(a.id) ?? false;
+                        return (
+                          <div
+                            key={a.id}
+                            className={[
+                              "flex items-start gap-3 rounded-lg border p-3",
+                              isCorrect ? "border-emerald-500/60 bg-emerald-500/10" : "border-border/60",
+                              isWrongPick ? "border-destructive/50 bg-destructive/10 opacity-70" : "",
+                            ].join(" ")}
+                          >
+                            <div className={["mt-0.5 h-4 w-4 rounded-full border", isCorrect ? "border-emerald-500 bg-emerald-500" : "border-muted-foreground/40"].join(" ")} />
+                            <span className="flex-1">{a.answer}</span>
+                            {isCorrect ? <CheckCircle2 className="h-4 w-4 text-emerald-600" /> : null}
+                            {isWrongPick ? <XCircle className="h-4 w-4 text-destructive" /> : null}
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {explanation ? (
+                      <p className="mt-3 text-muted-foreground">
+                        <span className="font-medium text-foreground">Varför:</span> {explanation}
+                      </p>
+                    ) : null}
                   </div>
                 );
               })}
