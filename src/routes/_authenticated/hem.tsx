@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { fetchPublishedCoursesWithLessons, fetchAllUserProgress } from "@/lib/courses";
+import { LearningOverview } from "@/components/progress/LearningOverview";
 
 export const Route = createFileRoute("/_authenticated/hem")({
   head: () => ({
@@ -227,6 +228,13 @@ function HemPage() {
               })}
             </div>
           )}
+        </section>
+
+        <section className="mt-16">
+          <h2 className="text-2xl font-bold tracking-tight">Dina framsteg</h2>
+          <div className="mt-6">
+            <LearningOverview enabled={!!user} />
+          </div>
         </section>
       </PageContainer>
     </SiteShell>
