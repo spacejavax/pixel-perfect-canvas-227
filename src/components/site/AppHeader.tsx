@@ -54,6 +54,7 @@ export function AppHeader() {
 
         <nav className="hidden items-center gap-8 md:flex" aria-label="Huvudmeny">
           <NavLink to="/kurser">Kurser</NavLink>
+          <NavLink to="/money-lab">Money Lab</NavLink>
           <NavLink to="/budget">Budget</NavLink>
           <NavLink to="/om-pongi">Om Pongi</NavLink>
           {user ? (
@@ -94,6 +95,7 @@ export function AppHeader() {
               </SheetHeader>
               <div className="mt-6 flex flex-col gap-4">
                 <NavLink to="/kurser" onClick={close}>Kurser</NavLink>
+                <NavLink to="/money-lab" onClick={close}>Money Lab</NavLink>
                 <NavLink to="/budget" onClick={close}>Budget</NavLink>
                 <NavLink to="/om-pongi" onClick={close}>Om Pongi</NavLink>
                 {user ? (
